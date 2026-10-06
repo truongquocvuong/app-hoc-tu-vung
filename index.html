@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nail Vocab App</title>
+    <!-- Khai báo PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
+        .header { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 20px; }
+        .card { background: white; border-radius: 15px; padding: 30px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; min-height: 150px; display: flex; flex-direction: column; justify-content: center;}
+        .word-vi { font-size: 28px; font-weight: bold; color: #e74c3c; margin-bottom: 10px; }
+        .input-group { margin-top: 20px; }
+        input { width: 80%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; outline: none; }
+        input:focus { border-color: #4CAF50; }
+        .btn { border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin: 5px; width: 45%; }
+        .btn-check { background-color: #4CAF50; width: 85%; margin-top: 10px; }
+        .btn-audio-en { background-color: #3498db; }
+        .btn-audio-tl { background-color: #f39c12; }
+        .btn-next { background-color: #9b59b6; width: 85%; margin-top: 10px; }
+        #result { margin-top: 15px; font-weight: bold; font-size: 18px; }
+        .loading { font-size: 18px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="header">💅 Học Từ Vựng Tiệm Nail</div>
+
+    <div class="card" id="flashcard">
+        <div id="loading" class="loading">⏳ Đang tải dữ liệu từ Google Sheets...</div>
+        <div id="content" style="display: none;">
+            <div class="word-vi" id="word_vi">Tiếng Việt</div>
+            
+            <div class="input-group">
+                <input type="text" id="user_input" placeholder="Gõ tiếng Anh vào đây...">
+                <button class="btn btn-check" onclick="checkAnswer()">Kiểm tra</button>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <div id="controls" style="display: none;">
+        <button class="btn btn-audio-en" onclick="playAudio('en')">🔊 Đọc Tiếng Anh</button>
+        <button class="btn btn-audio-tl" onclick="playAudio('tl')">🔊 Đọc Tagalog</button>
+        <button class="btn btn-next" onclick="nextWord()">➡️ Từ tiếp theo</button>
+    </div>
+
+    <script>
+        // --- THAY LINK CỦA BẠN VÀO ĐÂY ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbwBtl9r0By4kNutEQbKacfJz5NOaz3aEesUP4jJGLCl5IVKg3WjSbFVnHB0r9AsZ7yeaQ/exec
+"; 
+        
+        let vocabList = [];
+        let currentWord = {};
+
+        // Tải dữ liệu khi mở App
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                vocabList = data;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('controls').style.display = 'block';
+                nextWord();
+            })
+            .catch(err => alert("Lỗi kết nối mạng!"));
+
+        function nextWord() {
+            currentWord = vocabList[Math.floor(Math.random() * vocabList.length)];
+            document.getElementById('word_vi').innerText = "🇻🇳 " + currentWord.vi;
+            document.getElementById('user_input').value = "";
+            document.getElementById('result').innerText = "";
+            document.getElementById('user_input').focus();
+        }
+
+        function checkAnswer() {
+            let input = document.getElementById('user_input').value.trim().toLowerCase();
+            let answer = currentWord.en.toLowerCase();
+            let resultDiv = document.getElementById('result');
+
+            if (input === answer) {
+                resultDiv.innerHTML = `✅ Chính xác!<br><span style="color:#f39c12; font-size:16px;">🇵🇭 Tagalog: ${currentWord.tl}</span>`;
+                resultDiv.style.color = "green";
+                playAudio('en'); // Tự động đọc tiếng Anh khi đúng
+            } else {
+                resultDiv.innerHTML = `❌ Sai rồi!<br>Đáp án: <b>${currentWord.en}</b>`;
+                resultDiv.style.color = "red";
+            }
+        }
+
+        function playAudio(lang) {
+            let text = (lang === 'en') ? currentWord.en : currentWord.tl;
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = (lang === 'en') ? 'en-US' : 'tl-PH';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Đăng ký Service Worker cho PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
