@@ -3,103 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nail Vocab App</title>
-    <!-- Khai báo PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4CAF50">
-    
+    <title>Nail Vocab Super App</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
-        .header { font-size: 24px; font-weight: bold; color: #333; margin-bottom: 20px; }
-        .card { background: white; border-radius: 15px; padding: 30px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; min-height: 150px; display: flex; flex-direction: column; justify-content: center;}
-        .word-vi { font-size: 28px; font-weight: bold; color: #e74c3c; margin-bottom: 10px; }
-        .input-group { margin-top: 20px; }
-        input { width: 80%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; outline: none; }
-        input:focus { border-color: #4CAF50; }
-        .btn { border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin: 5px; width: 45%; }
-        .btn-check { background-color: #4CAF50; width: 85%; margin-top: 10px; }
-        .btn-audio-en { background-color: #3498db; }
-        .btn-audio-tl { background-color: #f39c12; }
-        .btn-next { background-color: #9b59b6; width: 85%; margin-top: 10px; }
-        #result { margin-top: 15px; font-weight: bold; font-size: 18px; }
-        .loading { font-size: 18px; color: #666; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; color: #333;}
+        .header { font-size: 24px; font-weight: bold; color: #2c3e50; margin-bottom: 20px; }
+        
+        /* Giao diện Menu Chính (Dashboard) */
+        #main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .menu-card { background: white; padding: 20px 10px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; border-bottom: 4px solid #ddd;}
+        .menu-card:active { transform: translateY(4px); border-bottom: 0; }
+        .menu-icon { font-size: 30px; margin-bottom: 10px; }
+        .menu-title { font-weight: bold; font-size: 14px; }
+
+        /* Khung Game chung */
+        .screen { display: none; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 300px; position: relative;}
+        .active-screen { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
+        
+        .btn-back { position: absolute; top: 15px; left: 15px; background: #ecf0f1; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .word-display { font-size: 28px; font-weight: bold; color: #e74c3c; margin: 40px 0 20px 0; }
+        
+        /* Nút bấm chung */
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: 0.2s;}
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #2ecc71; color: white; }
+        .btn-warning { background: #f1c40f; color: #333; }
+        
+        /* Trắc nghiệm */
+        .quiz-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .quiz-btn { background: #f8f9fa; border: 2px solid #bdc3c7; color: #2c3e50; }
+        .quiz-btn.correct { background: #2ecc71; border-color: #27ae60; color: white; }
+        .quiz-btn.wrong { background: #e74c3c; border-color: #c0392b; color: white; }
+
+        /* Luyện Gõ */
+        input { width: 90%; padding: 15px; border: 2px solid #bdc3c7; border-radius: 10px; font-size: 18px; text-align: center; outline: none; margin-bottom: 15px;}
+        input:focus { border-color: #3498db; }
+
+        /* Nối từ */
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .match-btn { padding: 15px 5px; border: 2px solid #bdc3c7; border-radius: 10px; background: white; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .match-btn.selected { border-color: #3498db; background: #e8f4f8; }
+        .match-btn.matched { opacity: 0; pointer-events: none; }
+
+        #result-msg { font-size: 18px; font-weight: bold; margin-top: 15px; min-height: 25px;}
     </style>
 </head>
 <body>
 
-    <div class="header">💅 Học Từ Vựng Tiệm Nail</div>
+    <div class="header">💅 Nail Vocab Master</div>
+    <div id="loading">⏳ Đang tải dữ liệu từ máy chủ...</div>
 
-    <div class="card" id="flashcard">
-        <div id="loading" class="loading">⏳ Đang tải dữ liệu từ Google Sheets...</div>
-        <div id="content" style="display: none;">
-            <div class="word-vi" id="word_vi">Tiếng Việt</div>
-            
-            <div class="input-group">
-                <input type="text" id="user_input" placeholder="Gõ tiếng Anh vào đây...">
-                <button class="btn btn-check" onclick="checkAnswer()">Kiểm tra</button>
+    <!-- MÀN HÌNH MENU CHÍNH -->
+    <div id="screen-menu" class="screen active-screen" style="background: transparent; box-shadow: none; padding: 0;">
+        <div style="font-size: 16px; color: #7f8c8d; margin-bottom: 10px;">Chọn phương pháp học hôm nay:</div>
+        <div id="main-menu">
+            <div class="menu-card" style="border-color: #3498db;" onclick="openScreen('screen-type')">
+                <div class="menu-icon">⌨️</div><div class="menu-title">Luyện Gõ</div>
             </div>
-            <div id="result"></div>
+            <div class="menu-card" style="border-color: #9b59b6;" onclick="openScreen('screen-match')">
+                <div class="menu-icon">🎮</div><div class="menu-title">Nối Từ</div>
+            </div>
+            <div class="menu-card" style="border-color: #e67e22;" onclick="openScreen('screen-quiz')">
+                <div class="menu-icon">🎯</div><div class="menu-title">Trắc Nghiệm</div>
+            </div>
+            <div class="menu-card" style="border-color: #e74c3c;" onclick="openScreen('screen-listen')">
+                <div class="menu-icon">🎧</div><div class="menu-title">Nghe Mù</div>
+            </div>
+            <div class="menu-card" style="border-color: #2ecc71; grid-column: span 2;" onclick="openScreen('screen-speak')">
+                <div class="menu-icon">🎤</div><div class="menu-title">AI Luyện Nói</div>
+            </div>
         </div>
     </div>
 
-    <div id="controls" style="display: none;">
-        <button class="btn btn-audio-en" onclick="playAudio('en')">🔊 Đọc Tiếng Anh</button>
-        <button class="btn btn-audio-tl" onclick="playAudio('tl')">🔊 Đọc Tagalog</button>
-        <button class="btn btn-next" onclick="nextWord()">➡️ Từ tiếp theo</button>
+    <!-- MÀN HÌNH 1: LUYỆN GÕ -->
+    <div id="screen-type" class="screen">
+        <button class="btn-back" onclick="openScreen('screen-menu')">⬅ Quay lại</button>
+        <div class="word-display" id="type-vi">Tiếng Việt</div>
+        <input type="text" id="type-input" placeholder="Gõ tiếng Anh...">
+        <button class="btn-action btn-success" onclick="checkType()">Kiểm tra</button>
+        <button class="btn-action btn-warning" onclick="loadType()">Bỏ qua ➡️</button>
+        <div id="type-result" id="result-msg"></div>
+    </div>
+
+    <!-- MÀN HÌNH 2: TRẮC NGHIỆM -->
+    <div id="screen-quiz" class="screen">
+        <button class="btn-back" onclick="openScreen('screen-menu')">⬅ Quay lại</button>
+        <div class="word-display" id="quiz-vi">Tiếng Việt</div>
+        <div class="quiz-grid" id="quiz-options"></div>
+        <div id="quiz-result" id="result-msg" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+
+    <!-- MÀN HÌNH 3: NGHE MÙ -->
+    <div id="screen-listen" class="screen">
+        <button class="btn-back" onclick="openScreen('screen-menu')">⬅ Quay lại</button>
+        <div style="margin: 50px 0 30px 0;">
+            <button class="btn-action btn-primary" style="font-size: 50px; padding: 20px; border-radius: 50%; width: 100px; height: 100px;" onclick="playAudio(currentWord.en, 'en')">🔊</button>
+            <p style="color: #7f8c8d;">Bấm để nghe và gõ lại từ</p>
+        </div>
+        <input type="text" id="listen-input" placeholder="Bạn nghe được chữ gì?">
+        <button class="btn-action btn-success" onclick="checkListen()">Kiểm tra</button>
+        <button class="btn-action btn-warning" onclick="loadListen()">Bỏ qua ➡️</button>
+        <div id="listen-result" id="result-msg"></div>
+    </div>
+
+    <!-- MÀN HÌNH 4: AI LUYỆN NÓI -->
+    <div id="screen-speak" class="screen">
+        <button class="btn-back" onclick="openScreen('screen-menu')">⬅ Quay lại</button>
+        <div class="word-display" id="speak-en" style="color: #2980b9;">English Word</div>
+        <div style="font-size: 16px; color: #7f8c8d; margin-bottom: 20px;" id="speak-vi">Nghĩa tiếng Việt</div>
+        
+        <button class="btn-action btn-success" id="btn-mic" style="font-size: 20px; padding: 20px;" onclick="startDictation()">🎤 Bấm để Nói</button>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+            <div>Máy nghe được: <b id="speak-transcript" style="color: #e67e22;">...</b></div>
+        </div>
+        <div id="speak-result" id="result-msg" style="margin-top: 15px; font-size: 20px; font-weight: bold;"></div>
+        <button class="btn-action btn-warning" style="margin-top: 15px;" onclick="loadSpeak()">Từ tiếp theo ➡️</button>
+    </div>
+
+    <!-- MÀN HÌNH 5: NỐI TỪ (Giữ nguyên logic cũ) -->
+    <div id="screen-match" class="screen">
+        <button class="btn-back" onclick="openScreen('screen-menu')">⬅ Quay lại</button>
+        <div style="margin-top: 40px; font-size: 14px; color: #666; margin-bottom: 10px;">Ghép cặp Việt - Anh</div>
+        <div class="match-grid" id="match-board"></div>
+        <button class="btn-action btn-primary" style="margin-top: 20px;" onclick="loadMatch()">🔄 Ván mới</button>
     </div>
 
     <script>
-        // --- THAY LINK CỦA BẠN VÀO ĐÂY ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbx46sKcbkGNWT5NmBMg73QZOr_BkNJISu7DoE1J_svfmYG418hfmKCXBTCcL3a720pL0w/exec";
+        // --- THAY LINK API CỦA BẠN VÀO ĐÂY ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbz2nyM-B9pV0rYYY9HVZutUEE-318-9gexaYcz1azOgybmAu3rwiJaPjTfyKX5y436uuw/exec"; 
         
         let vocabList = [];
         let currentWord = {};
 
-        // Tải dữ liệu khi mở App
+        // 1. TẢI DỮ LIỆU
         fetch(API_URL)
             .then(res => res.json())
             .then(data => {
                 vocabList = data;
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                document.getElementById('controls').style.display = 'block';
-                nextWord();
-            })
-            .catch(err => alert("Lỗi kết nối mạng!"));
+            });
 
-        function nextWord() {
-            currentWord = vocabList[Math.floor(Math.random() * vocabList.length)];
-            document.getElementById('word_vi').innerText = "🇻🇳 " + currentWord.vi;
-            document.getElementById('user_input').value = "";
-            document.getElementById('result').innerText = "";
-            document.getElementById('user_input').focus();
+        // 2. ĐIỀU HƯỚNG MÀN HÌNH
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+            
+            // Khởi tạo dữ liệu khi vào từng màn hình
+            if(screenId === 'screen-type') loadType();
+            if(screenId === 'screen-quiz') loadQuiz();
+            if(screenId === 'screen-listen') loadListen();
+            if(screenId === 'screen-speak') loadSpeak();
+            if(screenId === 'screen-match') loadMatch();
         }
 
-        function checkAnswer() {
-            let input = document.getElementById('user_input').value.trim().toLowerCase();
-            let answer = currentWord.en.toLowerCase();
-            let resultDiv = document.getElementById('result');
+        function getRandomWord() { return vocabList[Math.floor(Math.random() * vocabList.length)]; }
+        function playAudio(text, lang) {
+            let u = new SpeechSynthesisUtterance(text);
+            u.lang = (lang === 'en') ? 'en-US' : 'tl-PH';
+            window.speechSynthesis.speak(u);
+        }
 
-            if (input === answer) {
-                resultDiv.innerHTML = `✅ Chính xác!<br><span style="color:#f39c12; font-size:16px;">🇵🇭 Tagalog: ${currentWord.tl}</span>`;
-                resultDiv.style.color = "green";
-                playAudio('en'); // Tự động đọc tiếng Anh khi đúng
+        // --- MODULE 1: LUYỆN GÕ ---
+        function loadType() {
+            currentWord = getRandomWord();
+            document.getElementById('type-vi').innerText = currentWord.vi;
+            document.getElementById('type-input').value = "";
+            document.getElementById('type-result').innerText = "";
+        }
+        function checkType() {
+            let input = document.getElementById('type-input').value.trim().toLowerCase();
+            if(input === currentWord.en.toLowerCase()) {
+                document.getElementById('type-result').innerHTML = "✅ Chính xác!"; document.getElementById('type-result').style.color = "green";
+                playAudio(currentWord.en, 'en'); setTimeout(loadType, 1500);
             } else {
-                resultDiv.innerHTML = `❌ Sai rồi!<br>Đáp án: <b>${currentWord.en}</b>`;
-                resultDiv.style.color = "red";
+                document.getElementById('type-result').innerHTML = `❌ Sai! Đáp án: ${currentWord.en}`; document.getElementById('type-result').style.color = "red";
             }
         }
 
-        function playAudio(lang) {
-            let text = (lang === 'en') ? currentWord.en : currentWord.tl;
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = (lang === 'en') ? 'en-US' : 'tl-PH';
-            window.speechSynthesis.speak(utterance);
+        // --- MODULE 2: TRẮC NGHIỆM ---
+        function loadQuiz() {
+            currentWord = getRandomWord();
+            document.getElementById('quiz-vi').innerText = currentWord.vi;
+            document.getElementById('quiz-result').innerText = "";
+            
+            // Tạo 3 đáp án sai + 1 đúng
+            let options = [currentWord];
+            while(options.length < 4) {
+                let randomW = getRandomWord();
+                if(!options.includes(randomW)) options.push(randomW);
+            }
+            options.sort(() => Math.random() - 0.5); // Xáo trộn
+
+            let optionsHtml = "";
+            options.forEach(opt => {
+                optionsHtml += `<button class="btn-action quiz-btn" onclick="checkQuiz(this, '${opt.en}')">${opt.en}</button>`;
+            });
+            document.getElementById('quiz-options').innerHTML = optionsHtml;
+        }
+        function checkQuiz(btn, selectedEn) {
+            if(selectedEn === currentWord.en) {
+                btn.classList.add('correct');
+                document.getElementById('quiz-result').innerHTML = "✅ Giỏi quá!"; document.getElementById('quiz-result').style.color = "green";
+                playAudio(currentWord.en, 'en'); setTimeout(loadQuiz, 1500);
+            } else {
+                btn.classList.add('wrong');
+                document.getElementById('quiz-result').innerHTML = "❌ Thử lại nhé!"; document.getElementById('quiz-result').style.color = "red";
+            }
         }
 
-        // Đăng ký Service Worker cho PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+        // --- MODULE 3: NGHE MÙ ---
+        function loadListen() {
+            currentWord = getRandomWord();
+            document.getElementById('listen-input').value = "";
+            document.getElementById('listen-result').innerText = "";
+            playAudio(currentWord.en, 'en'); // Tự động đọc khi mở
+        }
+        function checkListen() {
+            let input = document.getElementById('listen-input').value.trim().toLowerCase();
+            if(input === currentWord.en.toLowerCase()) {
+                document.getElementById('listen-result').innerHTML = `✅ Đúng! Nghĩa là: ${currentWord.vi}`; document.getElementById('listen-result').style.color = "green";
+                setTimeout(loadListen, 2000);
+            } else {
+                document.getElementById('listen-result').innerHTML = `❌ Sai! Nghe lại nhé.`; document.getElementById('listen-result').style.color = "red";
+                playAudio(currentWord.en, 'en');
+            }
+        }
+
+        // --- MODULE 4: AI LUYỆN NÓI (Web Speech API) ---
+        function loadSpeak() {
+            currentWord = getRandomWord();
+            document.getElementById('speak-en').innerText = currentWord.en;
+            document.getElementById('speak-vi').innerText = currentWord.vi;
+            document.getElementById('speak-transcript').innerText = "...";
+            document.getElementById('speak-result').innerText = "";
+        }
+        function startDictation() {
+            if (window.hasOwnProperty('webkitSpeechRecognition') || window.hasOwnProperty('SpeechRecognition')) {
+                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                var recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "en-US";
+                
+                document.getElementById('btn-mic').innerText = "🔴 Đang nghe...";
+                document.getElementById('btn-mic').style.background = "#e74c3c";
+
+                recognition.start();
+
+                recognition.onresult = function(e) {
+                    document.getElementById('btn-mic').innerText = "🎤 Bấm để Nói";
+                    document.getElementById('btn-mic').style.background = "#2ecc71";
+                    
+                    let transcript = e.results[0][0].transcript.toLowerCase().replace(/[.,?!]/g,"");
+                    document.getElementById('speak-transcript').innerText = transcript;
+                    
+                    let target = currentWord.en.toLowerCase().replace(/[.,?!]/g,"");
+                    if(transcript === target) {
+                        document.getElementById('speak-result').innerHTML = "✅ Phát âm chuẩn!"; document.getElementById('speak-result').style.color = "green";
+                        setTimeout(loadSpeak, 2000);
+                    } else {
+                        document.getElementById('speak-result').innerHTML = "❌ Chưa chuẩn, thử lại!"; document.getElementById('speak-result').style.color = "red";
+                    }
+                    recognition.stop();
+                };
+                recognition.onerror = function(e) {
+                    document.getElementById('btn-mic').innerText = "🎤 Bấm để Nói";
+                    document.getElementById('btn-mic').style.background = "#2ecc71";
+                    alert("Lỗi Micro: " + e.error);
+                }
+            } else {
+                alert("Rất tiếc, trình duyệt của bạn không hỗ trợ tính năng thu âm. Vui lòng dùng Google Chrome trên Android.");
+            }
+        }
+
+        // --- MODULE 5: NỐI TỪ ---
+        let firstSel = null, matches = 0;
+        function loadMatch() {
+            let board = document.getElementById('match-board'); board.innerHTML = '';
+            firstSel = null; matches = 0;
+            let shuffled = [...vocabList].sort(() => 0.5 - Math.random()).slice(0, 4); // Lấy 4 cặp cho vừa màn hình
+            let btns = [];
+            shuffled.forEach(w => {
+                btns.push({ text: w.vi, id: w.en, lang: 'vi' });
+                btns.push({ text: w.en, id: w.en, lang: 'en' });
+            });
+            btns.sort(() => 0.5 - Math.random());
+            btns.forEach(item => {
+                let btn = document.createElement('button'); btn.className = 'match-btn'; btn.innerText = item.text;
+                btn.onclick = () => handleMatch(btn, item.id, item.lang);
+                board.appendChild(btn);
+            });
+        }
+        function handleMatch(btn, id, lang) {
+            if(btn.classList.contains('matched') || btn.classList.contains('selected')) return;
+            btn.classList.add('selected');
+            if(!firstSel) { firstSel = { btn: btn, id: id, lang: lang }; } 
+            else {
+                if(firstSel.id === id && firstSel.lang !== lang) {
+                    firstSel.btn.classList.replace('selected', 'matched'); btn.classList.replace('selected', 'matched');
+                    matches++; if(matches === 4) setTimeout(() => { alert("🎉 Hoàn thành!"); loadMatch(); }, 500);
+                } else {
+                    firstSel.btn.classList.remove('selected'); btn.classList.remove('selected');
+                }
+                firstSel = null;
+            }
         }
     </script>
 </body>
