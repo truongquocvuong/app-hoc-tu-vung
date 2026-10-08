@@ -48,6 +48,9 @@
         .match-btn.matched { opacity: 0; pointer-events: none; }
 
         .extra-info { font-size: 13px; color: #7f8c8d; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; line-height: 1.5;}
+        
+        /* CSS cho phần phiên âm */
+        .pronunciation-text { font-size: 0.85em; color: #7f8c8d; font-weight: normal; margin-left: 5px;}
     </style>
 </head>
 <body>
@@ -58,7 +61,6 @@
     <!-- MÀN HÌNH MENU CHÍNH -->
     <div id="screen-menu" class="screen active-screen" style="background: transparent; box-shadow: none; padding: 0;">
         
-        <!-- BỘ CHỌN ĐA NGÔN NGỮ TỰ ĐỘNG -->
         <div class="lang-selector">
             <div class="lang-title">Chọn các ngôn ngữ muốn luyện tập:</div>
             <div class="lang-options" id="dynamic-lang-options">
@@ -141,16 +143,13 @@
 
     <script>
         // --- THAY LINK API CỦA BẠN VÀO ĐÂY ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxuzIud6IQd33JSHi_0xB7mpMQ2SNKbwCrvia1mEwei4R5WTJJVtNvwOvFQpPH77iJFMg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyi8gQyK1XoD9p6nZt05-G5eXv4Vp4O2H62z8mB4F_T_Q3N6tTq3T1Z2vX9X_2X_2X/exec"; 
         
         let vocabList = [];
         let currentWord = {};
         
-        // Mảng chứa các ngôn ngữ đang được chọn
         let activeLangs = []; 
         let allAvailableLangs = [];
-
-        // Ngôn ngữ đang được dùng cho câu hỏi HIỆN TẠI
         let currentLangForTurn = ''; 
 
         const langConfig = {
@@ -180,7 +179,6 @@
             let html = '';
             allAvailableLangs.forEach((lang, index) => {
                 let config = langConfig[lang] || { name: lang.toUpperCase(), flag: '🏳️' };
-                // Mặc định bật tất cả các ngôn ngữ ban đầu
                 activeLangs.push(lang);
                 html += `<button class="lang-btn selected" id="btn-lang-${lang}" onclick="toggleLanguage('${lang}')">
                             ${config.flag} ${config.name}
@@ -189,26 +187,20 @@
             document.getElementById('dynamic-lang-options').innerHTML = html;
         }
 
-        // BẬT/TẮT NGÔN NGỮ
         function toggleLanguage(lang) {
             let index = activeLangs.indexOf(lang);
             let btn = document.getElementById('btn-lang-' + lang);
             
             if (index > -1) {
-                // Đang bật -> Tắt đi
-                if (activeLangs.length === 1) {
-                    alert("Bạn phải chọn ít nhất 1 ngôn ngữ để học!"); return;
-                }
+                if (activeLangs.length === 1) { alert("Bạn phải chọn ít nhất 1 ngôn ngữ để học!"); return; }
                 activeLangs.splice(index, 1);
                 btn.classList.remove('selected');
             } else {
-                // Đang tắt -> Bật lên
                 activeLangs.push(lang);
                 btn.classList.add('selected');
             }
         }
 
-        // HÀM CHỌN NGÔN NGỮ NGẪU NHIÊN CHO MỖI LƯỢT CHƠI
         function pickRandomActiveLang() {
             return activeLangs[Math.floor(Math.random() * activeLangs.length)];
         }
@@ -217,14 +209,27 @@
             return langConfig[langCode] ? langConfig[langCode].name : langCode.toUpperCase();
         }
 
-        // TỰ ĐỘNG HIỂN THỊ TẤT CẢ NGHĨA TRONG BẢNG
+        // --- HÀM ĐỊNH DẠNG TỪ (TỰ ĐỘNG THÊM PHÁT ÂM NẾU LÀ TIẾNG ANH) ---
+        function formatWordWithPronunciation(wordObj, langCode) {
+            let text = wordObj[langCode] || '...';
+            // Nếu là tiếng Anh VÀ có dữ liệu ở cột en_pronunciation
+            if (langCode === 'en' && wordObj.en_pronunciation) {
+                return `${text} <br><span class="pronunciation-text">(${wordObj.en_pronunciation})</span>`;
+            }
+            return text;
+        }
+
         function getExtraInfoHTML() {
-            let html = `<b>Phát âm tiếng Anh:</b> ${currentWord.en_pronunciation || 'Không có'}<br><hr style="border:0; border-top:1px dashed #ccc; margin:5px 0;">`;
+            let html = ``;
             let translations = allAvailableLangs.map(l => {
                 let name = getLangName(l);
-                return `<b>${name}:</b> ${currentWord[l] || '...'}`;
+                let text = currentWord[l] || '...';
+                if(l === 'en' && currentWord.en_pronunciation) {
+                    text += ` <span style="color:#e67e22">(${currentWord.en_pronunciation})</span>`;
+                }
+                return `<b>${name}:</b> ${text}`;
             });
-            return html + translations.join(' | ');
+            return html + translations.join('<br>');
         }
 
         // --- CÁC HÀM CHUNG ---
@@ -255,10 +260,17 @@
         // --- MODULE 1: LUYỆN GÕ ---
         function loadType() {
             currentWord = getRandomWord();
-            currentLangForTurn = pickRandomActiveLang(); // Bốc ngẫu nhiên 1 ngôn ngữ
+            currentLangForTurn = pickRandomActiveLang(); 
 
             document.getElementById('type-vi').innerText = currentWord.vi;
-            document.getElementById('type-hint').innerText = `👉 Hãy gõ ${getLangName(currentLangForTurn)}`;
+            
+            // Thêm gợi ý phát âm nếu đang gõ tiếng Anh
+            let hintText = `👉 Hãy gõ ${getLangName(currentLangForTurn)}`;
+            if(currentLangForTurn === 'en' && currentWord.en_pronunciation) {
+                hintText += ` (Gợi ý đọc: ${currentWord.en_pronunciation})`;
+            }
+            document.getElementById('type-hint').innerText = hintText;
+            
             document.getElementById('type-input').value = "";
             document.getElementById('type-result').innerText = "";
             document.getElementById('type-extra').style.display = 'none';
@@ -296,7 +308,9 @@
 
             let optionsHtml = "";
             options.forEach(opt => {
-                optionsHtml += `<button class="btn-action quiz-btn" onclick="checkQuiz(this, '${opt[currentLangForTurn]}')">${opt[currentLangForTurn] || '...'}</button>`;
+                // SỬ DỤNG HÀM ĐỊNH DẠNG TỪ ĐỂ HIỂN THỊ PHIÊN ÂM LÊN NÚT
+                let displayText = formatWordWithPronunciation(opt, currentLangForTurn);
+                optionsHtml += `<button class="btn-action quiz-btn" onclick="checkQuiz(this, '${opt[currentLangForTurn]}')">${displayText}</button>`;
             });
             document.getElementById('quiz-options').innerHTML = optionsHtml;
         }
@@ -344,7 +358,9 @@
             currentWord = getRandomWord();
             currentLangForTurn = pickRandomActiveLang();
 
-            document.getElementById('speak-target').innerText = currentWord[currentLangForTurn];
+            // SỬ DỤNG HÀM ĐỊNH DẠNG ĐỂ HIỂN THỊ PHIÊN ÂM
+            document.getElementById('speak-target').innerHTML = formatWordWithPronunciation(currentWord, currentLangForTurn);
+            
             document.getElementById('speak-hint').innerText = `👉 Hãy đọc bằng ${getLangName(currentLangForTurn)}`;
             document.getElementById('speak-vi').innerText = currentWord.vi;
             document.getElementById('speak-transcript').innerText = "...";
@@ -384,7 +400,7 @@
             } else { alert("Trình duyệt không hỗ trợ thu âm."); }
         }
 
-        // --- MODULE 5: NỐI TỪ (ĐA NGÔN NGỮ) ---
+        // --- MODULE 5: NỐI TỪ ---
         let firstSel = null, matches = 0;
         function loadMatch() {
             let board = document.getElementById('match-board'); board.innerHTML = '';
@@ -395,12 +411,16 @@
             shuffled.forEach(w => {
                 let randomLang = pickRandomActiveLang();
                 btns.push({ text: w.vi, id: w[randomLang], lang: 'vi' });
-                btns.push({ text: w[randomLang], id: w[randomLang], lang: randomLang });
+                
+                // SỬ DỤNG HÀM ĐỊNH DẠNG ĐỂ HIỂN THỊ PHIÊN ÂM LÊN NÚT
+                let displayText = formatWordWithPronunciation(w, randomLang);
+                btns.push({ text: displayText, id: w[randomLang], lang: randomLang });
             });
             
             btns.sort(() => 0.5 - Math.random());
             btns.forEach(item => {
-                let btn = document.createElement('button'); btn.className = 'match-btn'; btn.innerText = item.text || '...';
+                let btn = document.createElement('button'); btn.className = 'match-btn'; 
+                btn.innerHTML = item.text || '...'; // Dùng innerHTML thay vì innerText để hiển thị được thẻ <br>
                 btn.onclick = () => handleMatch(btn, item.id, item.lang);
                 board.appendChild(btn);
             });
