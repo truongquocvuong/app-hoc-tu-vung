@@ -13,7 +13,6 @@
         .lang-title { font-size: 14px; font-weight: bold; color: #555; margin-bottom: 10px; }
         .lang-options { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         .lang-btn { padding: 8px 15px; border: 2px solid #ccc; border-radius: 20px; background: white; color: #777; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s;}
-        /* Nút khi được chọn sẽ sáng lên */
         .lang-btn.selected { background: #2ecc71; color: white; border-color: #27ae60; box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4);}
 
         #main-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -142,7 +141,7 @@
 
     <script>
         // --- THAY LINK API CỦA BẠN VÀO ĐÂY ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxzrkgEw0gCPHpX1jVWZ_qHJewIHRKMWbydDRjQ2WAj_QrUOkaEh-sRGnqji2Wpbbfc/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxuzIud6IQd33JSHi_0xB7mpMQ2SNKbwCrvia1mEwei4R5WTJJVtNvwOvFQpPH77iJFMg/exec"; 
         
         let vocabList = [];
         let currentWord = {};
@@ -394,7 +393,6 @@
             let btns = [];
             
             shuffled.forEach(w => {
-                // Bốc ngẫu nhiên 1 ngôn ngữ cho từng cặp từ
                 let randomLang = pickRandomActiveLang();
                 btns.push({ text: w.vi, id: w[randomLang], lang: 'vi' });
                 btns.push({ text: w[randomLang], id: w[randomLang], lang: randomLang });
