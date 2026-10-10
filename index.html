@@ -32,7 +32,8 @@
         /* CSS CHO PHẦN SÁCH */
         .book-sentence { font-size: 22px; line-height: 1.5; color: #2c3e50; margin: 40px 0 20px 0; font-weight: 500;}
         .cloze-blank { border-bottom: 3px solid #e74c3c; color: transparent; padding: 0 10px; display: inline-block; min-width: 50px; }
-        .cloze-input { font-size: 20px; padding: 10px; text-align: center; border: 2px solid #9b59b6; border-radius: 8px; width: 80%; margin-bottom: 20px;}
+        .cloze-input { font-size: 20px; padding: 10px; text-align: center; border: 2px solid #9b59b6; border-radius: 8px; width: 80%; margin-bottom: 20px; outline:none;}
+        .cloze-input:focus { border-color: #8e44ad; }
         
         /* CSS Xếp hình (Scramble) */
         .scramble-area { min-height: 80px; border: 2px dashed #ccc; border-radius: 10px; padding: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start;}
@@ -48,7 +49,7 @@
     <!-- MÀN HÌNH 0: CHỌN APP -->
     <div id="screen-home" class="screen active-screen" style="background: transparent; box-shadow: none;">
         <div id="app-selector">
-            <button class="big-btn btn-nail" onclick="alert('Phần Nail tạm ẩn để tập trung test phần Sách. Mình sẽ gộp lại sau nhé!')">💅 HỌC TỪ VỰNG NAIL</button>
+            <button class="big-btn btn-nail" onclick="alert('Phần Nail tạm ẩn để bạn test phần Sách. Mình sẽ gộp lại sau nhé!')">💅 HỌC TỪ VỰNG NAIL</button>
             <button class="big-btn btn-book" onclick="openScreen('screen-book-menu')">📚 HỌC TÓM TẮT SÁCH</button>
         </div>
     </div>
@@ -104,8 +105,8 @@
     </div>
 
     <script>
-        // --- THAY LINK API MỚI VÀO ĐÂY ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbw5kiYiSlgNf47zD7WYc4rHjHFiGqy8C1hMS91djNfR1oe-qTXCMq5gc66xVJSicNDg/exec"; 
+        // --- THAY LINK API MỚI CỦA BẠN VÀO DÒNG BÊN DƯỚI ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbw712PWI31HfxS5AEGnDq2LKlXN9WuoYCLp4Y32EIclRnbsORLkYsRdZz3Hg1NTrDUZpw/exec"; 
         
         let bookData = [];
         let currentBookItem = {};
@@ -120,6 +121,9 @@
                 if(bookData.length === 0) {
                     alert("Chưa có dữ liệu Sách. Hãy vào Google Sheets tab 'Books' để thêm dữ liệu nhé!");
                 }
+            })
+            .catch(err => {
+                document.getElementById('loading').innerText = "❌ Lỗi kết nối. Vui lòng kiểm tra lại link API.";
             });
 
         // HÀM ĐIỀU HƯỚNG
@@ -138,12 +142,12 @@
         // PP1: ĐIỀN KHUYẾT (CLOZE DELETION)
         // ==========================================
         function loadCloze() {
+            if(bookData.length === 0) return;
             currentBookItem = getRandomBook();
             let sentence = currentBookItem.sentence;
             let keyword = currentBookItem.keyword;
             
             // Thay thế từ khóa bằng dấu gạch dưới
-            // Dùng Regex 'gi' để không phân biệt hoa thường
             let regex = new RegExp(keyword, "gi");
             let clozeSentence = sentence.replace(regex, `<span class="cloze-blank">____</span>`);
             
@@ -172,6 +176,7 @@
         // PP2: TỪ KHÓA KÍCH HOẠT (TRIGGER)
         // ==========================================
         function loadTrigger() {
+            if(bookData.length === 0) return;
             currentBookItem = getRandomBook();
             document.getElementById('trigger-keyword').innerText = currentBookItem.keyword;
             document.getElementById('trigger-answer').innerText = currentBookItem.sentence;
@@ -194,6 +199,7 @@
         let userSelectedWords = [];
 
         function loadScramble() {
+            if(bookData.length === 0) return;
             currentBookItem = getRandomBook();
             document.getElementById('scramble-result').innerText = "";
             
