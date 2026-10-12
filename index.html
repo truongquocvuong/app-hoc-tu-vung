@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App: Nail & Books</title>
+    <title>Super App: Nail, Books & Chinese</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; color: #333;}
         
@@ -14,11 +14,12 @@
         .btn-settings { background: #ecf0f1; border: none; padding: 8px 12px; border-radius: 8px; font-size: 18px; cursor: pointer;}
         
         /* MÀN HÌNH CHỌN APP (HOME) */
-        #app-selector { display: flex; flex-direction: column; gap: 20px; margin-top: 30px; }
-        .big-btn { padding: 30px 20px; border-radius: 20px; font-size: 20px; font-weight: bold; color: white; border: none; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px;}
+        #app-selector { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .big-btn { padding: 25px 15px; border-radius: 20px; font-size: 18px; font-weight: bold; color: white; border: none; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px;}
         .big-btn:active { transform: scale(0.95); }
         .btn-nail { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%); color: #d63031; border: 2px solid #ff7675;}
         .btn-book { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #4a235a; border: 2px solid #9b59b6;}
+        .btn-chinese { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); color: #fff; border: 2px solid #c0392b;}
 
         /* CSS CHUNG */
         .screen { display: none; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 300px; position: relative;}
@@ -35,7 +36,7 @@
         .menu-card { background: white; padding: 20px 10px; border-radius: 15px; cursor: pointer; border-bottom: 4px solid #ddd; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
         .menu-icon { font-size: 30px; margin-bottom: 10px; }
         
-        /* CSS NAIL */
+        /* CSS NAIL & CHINESE */
         .lang-selector { background: #f8f9fa; padding: 15px 10px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2ecc71;}
         .lang-options { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px;}
         .lang-btn { padding: 8px 15px; border: 2px solid #ccc; border-radius: 20px; background: white; color: #777; cursor: pointer; font-weight: bold; font-size: 13px;}
@@ -73,7 +74,7 @@
 <body>
 
     <div class="header-container">
-        <div class="header">🧠 Super App <span class="version-badge">v3.0</span></div>
+        <div class="header">🧠 Super App <span class="version-badge">v4.0</span></div>
         <button class="btn-settings" onclick="openSettings()">⚙️</button>
     </div>
     
@@ -82,26 +83,32 @@
     <!-- MÀN HÌNH 0: CHỌN APP (HOME) -->
     <div id="screen-home" class="screen active-screen" style="background: transparent; box-shadow: none; padding: 0;">
         <div id="app-selector">
-            <button class="big-btn btn-nail" onclick="openScreen('screen-nail-menu')">
-                <span style="font-size: 40px;">💅</span> HỌC TỪ VỰNG NAIL
+            <button class="big-btn btn-nail" onclick="startMode('nail')">
+                <span style="font-size: 35px;">💅</span> 1. HỌC TỪ VỰNG NAIL
             </button>
-            <button class="big-btn btn-book" onclick="openScreen('screen-book-menu')">
-                <span style="font-size: 40px;">📚</span> HỌC TÓM TẮT SÁCH
+            <button class="big-btn btn-chinese" onclick="startMode('zh')">
+                <span style="font-size: 35px;">🇨🇳</span> 2. HỌC TIẾNG TRUNG
+            </button>
+            <button class="big-btn btn-book" onclick="startMode('book')">
+                <span style="font-size: 35px;">📚</span> 3. HỌC TÓM TẮT SÁCH
             </button>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- PHẦN 1: GIAO DIỆN NAIL -->
+    <!-- PHẦN 1: GIAO DIỆN MENU TỪ VỰNG (Dùng chung cho Nail & Trung) -->
     <!-- ========================================== -->
-    <div id="screen-nail-menu" class="screen">
+    <div id="screen-vocab-menu" class="screen">
         <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
         <div style="margin-top: 40px;"></div>
-        <div class="lang-selector">
+        
+        <!-- Bộ chọn ngôn ngữ (Chỉ hiện ở chế độ Nail) -->
+        <div class="lang-selector" id="nail-lang-selector">
             <div style="font-size: 14px; font-weight: bold; color: #555;">Chọn ngôn ngữ luyện tập:</div>
             <div class="lang-options" id="dynamic-lang-options"></div>
         </div>
-        <div class="sub-menu" style="margin-top: 10px;">
+
+        <div class="sub-menu" id="vocab-sub-menu" style="margin-top: 10px;">
             <div class="menu-card" style="border-color: #3498db;" onclick="openScreen('screen-type')"><div class="menu-icon">⌨️</div>Luyện Gõ</div>
             <div class="menu-card" style="border-color: #9b59b6;" onclick="openScreen('screen-match')"><div class="menu-icon">🎮</div>Nối Từ</div>
             <div class="menu-card" style="border-color: #e67e22;" onclick="openScreen('screen-quiz')"><div class="menu-icon">🎯</div>Trắc Nghiệm</div>
@@ -110,9 +117,9 @@
         </div>
     </div>
 
-    <!-- Các màn hình Game Nail -->
+    <!-- Các màn hình Game Từ Vựng -->
     <div id="screen-type" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-nail-menu')">⬅ Menu Nail</button>
+        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
         <div class="word-display" id="type-vi">Tiếng Việt</div>
         <div class="lang-hint" id="type-hint">Đang tải...</div>
         <input type="text" id="type-input" class="nail-input" placeholder="Gõ đáp án vào đây...">
@@ -123,7 +130,7 @@
     </div>
 
     <div id="screen-quiz" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-nail-menu')">⬅ Menu Nail</button>
+        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
         <div class="word-display" id="quiz-vi">Tiếng Việt</div>
         <div class="lang-hint" id="quiz-hint">Đang tải...</div>
         <div class="quiz-grid" id="quiz-options"></div>
@@ -132,7 +139,7 @@
     </div>
 
     <div id="screen-listen" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-nail-menu')">⬅ Menu Nail</button>
+        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
         <div style="margin: 50px 0 10px 0;"><button class="btn-action btn-primary" style="font-size: 50px; padding: 20px; border-radius: 50%; width: 100px; height: 100px;" onclick="playCurrentAudio()">🔊</button></div>
         <div class="lang-hint" id="listen-hint" style="margin-bottom: 20px;">Đang tải...</div>
         <input type="text" id="listen-input" class="nail-input" placeholder="Bạn nghe được chữ gì?">
@@ -143,7 +150,7 @@
     </div>
 
     <div id="screen-speak" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-nail-menu')">⬅ Menu Nail</button>
+        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
         <div class="word-display" id="speak-target" style="color: #2980b9;">Word</div>
         <div class="lang-hint" id="speak-hint">Đang tải...</div>
         <div style="font-size: 16px; color: #7f8c8d; margin-bottom: 20px;" id="speak-vi">Nghĩa tiếng Việt</div>
@@ -154,8 +161,8 @@
     </div>
 
     <div id="screen-match" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-nail-menu')">⬅ Menu Nail</button>
-        <div style="margin-top: 40px; font-size: 14px; color: #666; margin-bottom: 10px;">Ghép cặp Việt - Đa ngôn ngữ</div>
+        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+        <div style="margin-top: 40px; font-size: 14px; color: #666; margin-bottom: 10px;">Ghép cặp tương ứng</div>
         <div class="match-grid" id="match-board"></div>
         <button class="btn-action btn-primary" style="margin-top: 20px;" onclick="loadMatch()">🔄 Ván mới</button>
     </div>
@@ -172,7 +179,6 @@
         </div>
     </div>
 
-    <!-- Các màn hình Game Sách -->
     <div id="screen-book-cloze" class="screen">
         <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
         <div class="book-sentence" id="cloze-text">Đang tải...</div>
@@ -207,6 +213,7 @@
             <h3 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom: 10px;">⚙️ Tùy chỉnh giọng đọc</h3>
             <div class="setting-group"><label>🇬🇧 Giọng Tiếng Anh:</label><select id="voice-select-en" onchange="testVoice('en')"></select></div>
             <div class="setting-group"><label>🇵🇭 Giọng Tagalog:</label><select id="voice-select-tl" onchange="testVoice('tl')"></select></div>
+            <div class="setting-group"><label>🇨🇳 Giọng Tiếng Trung:</label><select id="voice-select-zh" onchange="testVoice('zh')"></select></div>
             <button class="btn-action btn-success" style="margin-top: 10px;" onclick="closeSettings()">Lưu & Đóng</button>
         </div>
     </div>
@@ -215,20 +222,23 @@
         // ==========================================
         // THAY LINK API CỦA BẠN VÀO DÒNG BÊN DƯỚI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbyxXE-at7LX211Y9bTkmdC4La7hC3C6jvGZLlmz8cKsNzaCC3mkiR9efJooc2JMT7ahZw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhtDi1wC6pP3dLkL0x05ZNjPBgaBUSTkjG33dGa1tO67InWinpVmVxyMbESPCTvq-s9w/exec"; 
         
         // BIẾN TOÀN CỤC
         let vocabList = [];
         let bookData = [];
+        let currentAppMode = ''; // 'nail', 'zh', 'book'
         
-        // BIẾN NAIL
+        // BIẾN TỪ VỰNG
         let currentWord = {};
         let activeLangs = []; 
         let allAvailableLangs = [];
         let currentLangForTurn = ''; 
         const langConfig = {
             'en': { name: 'Tiếng Anh', flag: '🇬🇧', speechCode: 'en' },
-            'tl': { name: 'Tagalog', flag: '🇵🇭', speechCode: 'tl' }
+            'tl': { name: 'Tagalog', flag: '🇵🇭', speechCode: 'tl' },
+            'ilo': { name: 'Ilocano', flag: '🌴', speechCode: null },
+            'zh': { name: 'Tiếng Trung', flag: '🇨🇳', speechCode: 'zh' }
         };
 
         // BIẾN SÁCH
@@ -238,33 +248,44 @@
 
         // HỆ THỐNG GIỌNG ĐỌC
         let availableVoices = [];
-        let selectedVoices = { 'en': null, 'tl': null };
+        let selectedVoices = { 'en': null, 'tl': null, 'zh': null };
 
         function populateVoiceList() {
             availableVoices = window.speechSynthesis.getVoices();
             if(availableVoices.length === 0) return;
-            let enSelect = document.getElementById('voice-select-en'); let tlSelect = document.getElementById('voice-select-tl');
-            enSelect.innerHTML = ''; tlSelect.innerHTML = '';
+            let enSelect = document.getElementById('voice-select-en'); 
+            let tlSelect = document.getElementById('voice-select-tl');
+            let zhSelect = document.getElementById('voice-select-zh');
+            enSelect.innerHTML = ''; tlSelect.innerHTML = ''; zhSelect.innerHTML = '';
+            
             availableVoices.forEach((voice, index) => {
                 let option = document.createElement('option'); option.textContent = `${voice.name} (${voice.lang})`; option.value = index;
                 if(voice.lang.startsWith('en')) enSelect.appendChild(option.cloneNode(true));
                 if(voice.lang.startsWith('tl') || voice.lang.startsWith('fil') || voice.lang.startsWith('id')) tlSelect.appendChild(option.cloneNode(true));
+                if(voice.lang.startsWith('zh')) zhSelect.appendChild(option.cloneNode(true));
             });
             if(tlSelect.options.length === 0) { let opt = document.createElement('option'); opt.textContent = "Dùng mặc định"; tlSelect.appendChild(opt); }
+            if(zhSelect.options.length === 0) { let opt = document.createElement('option'); opt.textContent = "Dùng mặc định"; zhSelect.appendChild(opt); }
         }
         populateVoiceList();
         if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoiceList;
 
         function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeSettings() { 
-            let enIndex = document.getElementById('voice-select-en').value; let tlIndex = document.getElementById('voice-select-tl').value;
+            let enIndex = document.getElementById('voice-select-en').value; 
+            let tlIndex = document.getElementById('voice-select-tl').value;
+            let zhIndex = document.getElementById('voice-select-zh').value;
             if(enIndex) selectedVoices['en'] = availableVoices[enIndex];
             if(tlIndex && availableVoices[tlIndex]) selectedVoices['tl'] = availableVoices[tlIndex];
+            if(zhIndex && availableVoices[zhIndex]) selectedVoices['zh'] = availableVoices[zhIndex];
             document.getElementById('settings-modal').style.display = 'none'; 
         }
         function testVoice(lang) {
             let voiceIndex = document.getElementById('voice-select-' + lang).value; if(!voiceIndex) return;
-            let u = new SpeechSynthesisUtterance(lang === 'en' ? "Hello" : "Kumusta");
+            let testText = "Hello";
+            if(lang === 'tl') testText = "Kumusta";
+            if(lang === 'zh') testText = "你好";
+            let u = new SpeechSynthesisUtterance(testText);
             u.voice = availableVoices[voiceIndex]; window.speechSynthesis.speak(u);
         }
 
@@ -279,13 +300,35 @@
             })
             .catch(err => { document.getElementById('loading').innerText = "❌ Lỗi kết nối API!"; });
 
-        // ĐIỀU HƯỚNG MÀN HÌNH
+        // ĐIỀU HƯỚNG MÀN HÌNH & CHẾ ĐỘ
+        function startMode(mode) {
+            currentAppMode = mode;
+            if (mode === 'nail') {
+                document.getElementById('nail-lang-selector').style.display = 'block';
+                // Nail mode: Bật tất cả ngôn ngữ TRỪ tiếng Trung (zh)
+                activeLangs = allAvailableLangs.filter(l => l !== 'zh');
+                updateLangButtonsUI();
+                openScreen('screen-vocab-menu');
+            } else if (mode === 'zh') {
+                document.getElementById('nail-lang-selector').style.display = 'none';
+                // Chinese mode: Chỉ bật duy nhất tiếng Trung
+                activeLangs = ['zh'];
+                openScreen('screen-vocab-menu');
+            } else if (mode === 'book') {
+                openScreen('screen-book-menu');
+            }
+        }
+
+        function goBackToMenu() {
+            openScreen('screen-vocab-menu');
+        }
+
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
             document.getElementById(screenId).classList.add('active-screen');
             document.querySelectorAll('.extra-info').forEach(el => el.style.display = 'none');
 
-            // Load game Nail
+            // Load game Từ Vựng
             if(screenId === 'screen-type') loadType();
             if(screenId === 'screen-quiz') loadQuiz();
             if(screenId === 'screen-listen') loadListen();
@@ -299,44 +342,81 @@
         }
 
         // ==========================================
-        // LOGIC NAIL
+        // LOGIC TỪ VỰNG (DÙNG CHUNG NAIL & CHINESE)
         // ==========================================
         function buildLanguageSelector() {
             if(vocabList.length === 0) return;
             let allColumns = Object.keys(vocabList[0]);
-            allAvailableLangs = allColumns.filter(col => col !== 'vi' && col !== 'en_pronunciation');
+            // Lấy tất cả ngôn ngữ (Bỏ qua vi và các cột pronunciation)
+            allAvailableLangs = allColumns.filter(col => col !== 'vi' && !col.includes('_pronunciation'));
+            
             let html = '';
-            allAvailableLangs.forEach((lang, index) => {
+            // Chỉ tạo nút bấm cho các ngôn ngữ KHÁC tiếng Trung (Vì tiếng Trung đã có khu riêng)
+            allAvailableLangs.filter(l => l !== 'zh').forEach((lang) => {
                 let config = langConfig[lang] || { name: lang.toUpperCase(), flag: '🏳️' };
-                activeLangs.push(lang);
-                html += `<button class="lang-btn selected" id="btn-lang-${lang}" onclick="toggleLanguage('${lang}')">${config.flag} ${config.name}</button>`;
+                html += `<button class="lang-btn" id="btn-lang-${lang}" onclick="toggleLanguage('${lang}')">${config.flag} ${config.name}</button>`;
             });
             document.getElementById('dynamic-lang-options').innerHTML = html;
         }
 
-        function toggleLanguage(lang) {
-            let index = activeLangs.indexOf(lang); let btn = document.getElementById('btn-lang-' + lang);
-            if (index > -1) {
-                if (activeLangs.length === 1) { alert("Phải chọn ít nhất 1 ngôn ngữ!"); return; }
-                activeLangs.splice(index, 1); btn.classList.remove('selected');
-            } else { activeLangs.push(lang); btn.classList.add('selected'); }
+        function updateLangButtonsUI() {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('selected'));
+            activeLangs.forEach(lang => {
+                let btn = document.getElementById('btn-lang-' + lang);
+                if(btn) btn.classList.add('selected');
+            });
         }
 
-        function pickRandomActiveLang() { return activeLangs[Math.floor(Math.random() * activeLangs.length)]; }
+        function toggleLanguage(lang) {
+            let index = activeLangs.indexOf(lang); 
+            if (index > -1) {
+                if (activeLangs.length === 1) { alert("Phải chọn ít nhất 1 ngôn ngữ!"); return; }
+                activeLangs.splice(index, 1); 
+            } else { 
+                activeLangs.push(lang); 
+            }
+            updateLangButtonsUI();
+        }
+
+        function pickRandomActiveLang() { 
+            if(currentAppMode === 'zh') return 'zh';
+            return activeLangs[Math.floor(Math.random() * activeLangs.length)]; 
+        }
+        
         function getLangName(langCode) { return langConfig[langCode] ? langConfig[langCode].name : langCode.toUpperCase(); }
-        function getRandomWord() { return vocabList[Math.floor(Math.random() * vocabList.length)]; }
+        
+        function getRandomWord() { 
+            // Nếu học tiếng Trung, chỉ lấy những từ có dữ liệu ở cột 'zh'
+            if (currentAppMode === 'zh') {
+                let zhWords = vocabList.filter(w => w.zh && w.zh.trim() !== '');
+                if(zhWords.length === 0) return vocabList[0]; // Fallback
+                return zhWords[Math.floor(Math.random() * zhWords.length)];
+            }
+            // Nếu học Nail, lấy ngẫu nhiên
+            return vocabList[Math.floor(Math.random() * vocabList.length)]; 
+        }
         
         function formatWordWithPronunciation(wordObj, langCode) {
             let text = wordObj[langCode] || '...';
-            if (langCode === 'en' && wordObj.en_pronunciation) { return `${text} <span class="pronunciation-text">(${wordObj.en_pronunciation})</span>`; }
+            let pronKey = langCode + '_pronunciation'; 
+            if (wordObj[pronKey] && wordObj[pronKey].trim() !== '') { 
+                return `${text} <span class="pronunciation-text">(${wordObj[pronKey]})</span>`; 
+            }
             return text;
         }
 
         function getExtraInfoHTML() {
             let html = ``;
-            let translations = allAvailableLangs.map(l => {
-                let name = getLangName(l); let text = currentWord[l] || '...';
-                if(l === 'en' && currentWord.en_pronunciation) text += ` <span style="color:#e67e22">(${currentWord.en_pronunciation})</span>`;
+            // Nếu đang học tiếng Trung, chỉ hiện nghĩa tiếng Trung. Nếu học Nail, hiện các tiếng Nail.
+            let langsToShow = (currentAppMode === 'zh') ? ['zh'] : activeLangs;
+            
+            let translations = langsToShow.map(l => {
+                let name = getLangName(l); 
+                let text = currentWord[l] || '...';
+                let pronKey = l + '_pronunciation';
+                if(currentWord[pronKey] && currentWord[pronKey].trim() !== '') {
+                    text += ` <span style="color:#e67e22">(${currentWord[pronKey]})</span>`;
+                }
                 return `<b>${name}:</b> ${text}`;
             });
             return html + translations.join('<br>');
@@ -346,7 +426,7 @@
             if(currentLangForTurn === 'ilo') { alert("Chưa hỗ trợ giọng Ilocano."); return; }
             let u = new SpeechSynthesisUtterance(currentWord[currentLangForTurn]);
             if(selectedVoices[currentLangForTurn]) { u.voice = selectedVoices[currentLangForTurn]; } 
-            else { u.lang = langConfig[currentLangForTurn].speechCode; }
+            else { u.lang = langConfig[currentLangForTurn] ? langConfig[currentLangForTurn].speechCode : 'en'; }
             window.speechSynthesis.speak(u);
         }
 
@@ -354,7 +434,12 @@
             currentWord = getRandomWord(); currentLangForTurn = pickRandomActiveLang(); 
             document.getElementById('type-vi').innerText = currentWord.vi;
             let hintText = `👉 Hãy gõ ${getLangName(currentLangForTurn)}`;
-            if(currentLangForTurn === 'en' && currentWord.en_pronunciation) hintText += ` (Đọc là: ${currentWord.en_pronunciation})`;
+            
+            let pronKey = currentLangForTurn + '_pronunciation';
+            if(currentWord[pronKey] && currentWord[pronKey].trim() !== '') {
+                hintText += ` (Đọc là: ${currentWord[pronKey]})`;
+            }
+            
             document.getElementById('type-hint').innerText = hintText;
             document.getElementById('type-input').value = ""; document.getElementById('type-result').innerText = ""; document.getElementById('type-extra').style.display = 'none';
         }
@@ -433,13 +518,19 @@
         let firstSel = null, matches = 0;
         function loadMatch() {
             let board = document.getElementById('match-board'); board.innerHTML = ''; firstSel = null; matches = 0;
-            let shuffled = [...vocabList].sort(() => 0.5 - Math.random()).slice(0, 4); let btns = [];
+            let shuffled = [];
+            
+            // Bốc 4 từ ngẫu nhiên
+            for(let i=0; i<4; i++) { shuffled.push(getRandomWord()); }
+            
+            let btns = [];
             shuffled.forEach(w => {
                 let randomLang = pickRandomActiveLang();
                 btns.push({ text: w.vi, id: w[randomLang], lang: 'vi' });
                 let displayText = formatWordWithPronunciation(w, randomLang);
                 btns.push({ text: displayText, id: w[randomLang], lang: randomLang });
             });
+            
             btns.sort(() => 0.5 - Math.random());
             btns.forEach(item => {
                 let btn = document.createElement('button'); btn.className = 'match-btn'; btn.innerHTML = item.text || '...'; 
