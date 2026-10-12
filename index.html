@@ -74,7 +74,7 @@
 <body>
 
     <div class="header-container">
-        <div class="header">🧠 Super App <span class="version-badge">v4.0</span></div>
+        <div class="header">🧠 Super App <span class="version-badge">v4.1</span></div>
         <button class="btn-settings" onclick="openSettings()">⚙️</button>
     </div>
     
@@ -222,7 +222,7 @@
         // ==========================================
         // THAY LINK API CỦA BẠN VÀO DÒNG BÊN DƯỚI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwhtDi1wC6pP3dLkL0x05ZNjPBgaBUSTkjG33dGa1tO67InWinpVmVxyMbESPCTvq-s9w/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxtwZJVWKsz4jBX-8XPU_3s92vaGg9RhcJ1rhZbb3yJMI_PBIFvWIfeCRGWUpL8qrd4AQ/exec"; 
         
         // BIẾN TOÀN CỤC
         let vocabList = [];
@@ -305,13 +305,11 @@
             currentAppMode = mode;
             if (mode === 'nail') {
                 document.getElementById('nail-lang-selector').style.display = 'block';
-                // Nail mode: Bật tất cả ngôn ngữ TRỪ tiếng Trung (zh)
                 activeLangs = allAvailableLangs.filter(l => l !== 'zh');
                 updateLangButtonsUI();
                 openScreen('screen-vocab-menu');
             } else if (mode === 'zh') {
                 document.getElementById('nail-lang-selector').style.display = 'none';
-                // Chinese mode: Chỉ bật duy nhất tiếng Trung
                 activeLangs = ['zh'];
                 openScreen('screen-vocab-menu');
             } else if (mode === 'book') {
@@ -328,14 +326,12 @@
             document.getElementById(screenId).classList.add('active-screen');
             document.querySelectorAll('.extra-info').forEach(el => el.style.display = 'none');
 
-            // Load game Từ Vựng
             if(screenId === 'screen-type') loadType();
             if(screenId === 'screen-quiz') loadQuiz();
             if(screenId === 'screen-listen') loadListen();
             if(screenId === 'screen-speak') loadSpeak();
             if(screenId === 'screen-match') loadMatch();
             
-            // Load game Sách
             if(screenId === 'screen-book-cloze') loadCloze();
             if(screenId === 'screen-book-trigger') loadTrigger();
             if(screenId === 'screen-book-scramble') loadScramble();
@@ -347,11 +343,9 @@
         function buildLanguageSelector() {
             if(vocabList.length === 0) return;
             let allColumns = Object.keys(vocabList[0]);
-            // Lấy tất cả ngôn ngữ (Bỏ qua vi và các cột pronunciation)
             allAvailableLangs = allColumns.filter(col => col !== 'vi' && !col.includes('_pronunciation'));
             
             let html = '';
-            // Chỉ tạo nút bấm cho các ngôn ngữ KHÁC tiếng Trung (Vì tiếng Trung đã có khu riêng)
             allAvailableLangs.filter(l => l !== 'zh').forEach((lang) => {
                 let config = langConfig[lang] || { name: lang.toUpperCase(), flag: '🏳️' };
                 html += `<button class="lang-btn" id="btn-lang-${lang}" onclick="toggleLanguage('${lang}')">${config.flag} ${config.name}</button>`;
@@ -386,14 +380,14 @@
         function getLangName(langCode) { return langConfig[langCode] ? langConfig[langCode].name : langCode.toUpperCase(); }
         
         function getRandomWord() { 
-            // Nếu học tiếng Trung, chỉ lấy những từ có dữ liệu ở cột 'zh'
             if (currentAppMode === 'zh') {
                 let zhWords = vocabList.filter(w => w.zh && w.zh.trim() !== '');
-                if(zhWords.length === 0) return vocabList[0]; // Fallback
+                if(zhWords.length === 0) return vocabList[0]; 
                 return zhWords[Math.floor(Math.random() * zhWords.length)];
             }
-            // Nếu học Nail, lấy ngẫu nhiên
-            return vocabList[Math.floor(Math.random() * vocabList.length)]; 
+            // Nếu học Nail, bốc ngẫu nhiên nhưng phải đảm bảo từ đó có dữ liệu (không trống)
+            let validWords = vocabList.filter(w => w.vi && w.vi.trim() !== '');
+            return validWords[Math.floor(Math.random() * validWords.length)]; 
         }
         
         function formatWordWithPronunciation(wordObj, langCode) {
@@ -407,7 +401,6 @@
 
         function getExtraInfoHTML() {
             let html = ``;
-            // Nếu đang học tiếng Trung, chỉ hiện nghĩa tiếng Trung. Nếu học Nail, hiện các tiếng Nail.
             let langsToShow = (currentAppMode === 'zh') ? ['zh'] : activeLangs;
             
             let translations = langsToShow.map(l => {
@@ -457,7 +450,14 @@
             document.getElementById('quiz-vi').innerText = currentWord.vi; document.getElementById('quiz-hint').innerText = `👉 Hãy chọn ${getLangName(currentLangForTurn)}`;
             document.getElementById('quiz-result').innerText = ""; document.getElementById('quiz-extra').style.display = 'none';
             let options = [currentWord];
-            while(options.length < 4) { let randomW = getRandomWord(); if(!options.includes(randomW)) options.push(randomW); }
+            
+            // Lọc ra danh sách từ vựng hợp lệ để làm đáp án nhiễu
+            let pool = (currentAppMode === 'zh') ? vocabList.filter(w => w.zh && w.zh.trim() !== '') : vocabList;
+            
+            while(options.length < 4) { 
+                let randomW = pool[Math.floor(Math.random() * pool.length)]; 
+                if(!options.includes(randomW)) options.push(randomW); 
+            }
             options.sort(() => Math.random() - 0.5);
             let optionsHtml = "";
             options.forEach(opt => {
@@ -518,10 +518,18 @@
         let firstSel = null, matches = 0;
         function loadMatch() {
             let board = document.getElementById('match-board'); board.innerHTML = ''; firstSel = null; matches = 0;
-            let shuffled = [];
             
-            // Bốc 4 từ ngẫu nhiên
-            for(let i=0; i<4; i++) { shuffled.push(getRandomWord()); }
+            // Bốc 4 từ ngẫu nhiên KHÔNG TRÙNG NHAU
+            let shuffled = [];
+            let tempVocab = [...vocabList];
+            if (currentAppMode === 'zh') tempVocab = tempVocab.filter(w => w.zh && w.zh.trim() !== '');
+
+            for(let i=0; i<4; i++) { 
+                if(tempVocab.length === 0) break;
+                let randIndex = Math.floor(Math.random() * tempVocab.length);
+                shuffled.push(tempVocab[randIndex]);
+                tempVocab.splice(randIndex, 1); // Xóa từ đã bốc để không bị trùng
+            }
             
             let btns = [];
             shuffled.forEach(w => {
