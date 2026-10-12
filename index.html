@@ -74,7 +74,7 @@
 <body>
 
     <div class="header-container">
-        <div class="header">🧠 Super App <span class="version-badge">v4.1</span></div>
+        <div class="header">🧠 Super App <span class="version-badge">v4.2</span></div>
         <button class="btn-settings" onclick="openSettings()">⚙️</button>
     </div>
     
@@ -96,13 +96,12 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- PHẦN 1: GIAO DIỆN MENU TỪ VỰNG (Dùng chung cho Nail & Trung) -->
+    <!-- PHẦN 1: GIAO DIỆN MENU TỪ VỰNG -->
     <!-- ========================================== -->
     <div id="screen-vocab-menu" class="screen">
         <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
         <div style="margin-top: 40px;"></div>
         
-        <!-- Bộ chọn ngôn ngữ (Chỉ hiện ở chế độ Nail) -->
         <div class="lang-selector" id="nail-lang-selector">
             <div style="font-size: 14px; font-weight: bold; color: #555;">Chọn ngôn ngữ luyện tập:</div>
             <div class="lang-options" id="dynamic-lang-options"></div>
@@ -222,7 +221,7 @@
         // ==========================================
         // THAY LINK API CỦA BẠN VÀO DÒNG BÊN DƯỚI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxtwZJVWKsz4jBX-8XPU_3s92vaGg9RhcJ1rhZbb3yJMI_PBIFvWIfeCRGWUpL8qrd4AQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyV_iiXxeZUx_HtVGeihJTm4uIhCVFFvOJW6vK6rG-SpeaV2l-mxrOQaKkrI9zv3vyNmw/exec"; 
         
         // BIẾN TOÀN CỤC
         let vocabList = [];
@@ -338,7 +337,7 @@
         }
 
         // ==========================================
-        // LOGIC TỪ VỰNG (DÙNG CHUNG NAIL & CHINESE)
+        // LOGIC TỪ VỰNG (ĐÃ SỬA LỖI BỘ LỌC)
         // ==========================================
         function buildLanguageSelector() {
             if(vocabList.length === 0) return;
@@ -366,9 +365,7 @@
             if (index > -1) {
                 if (activeLangs.length === 1) { alert("Phải chọn ít nhất 1 ngôn ngữ!"); return; }
                 activeLangs.splice(index, 1); 
-            } else { 
-                activeLangs.push(lang); 
-            }
+            } else { activeLangs.push(lang); }
             updateLangButtonsUI();
         }
 
@@ -379,15 +376,10 @@
         
         function getLangName(langCode) { return langConfig[langCode] ? langConfig[langCode].name : langCode.toUpperCase(); }
         
-        function getRandomWord() { 
-            if (currentAppMode === 'zh') {
-                let zhWords = vocabList.filter(w => w.zh && w.zh.trim() !== '');
-                if(zhWords.length === 0) return vocabList[0]; 
-                return zhWords[Math.floor(Math.random() * zhWords.length)];
-            }
-            // Nếu học Nail, bốc ngẫu nhiên nhưng phải đảm bảo từ đó có dữ liệu (không trống)
-            let validWords = vocabList.filter(w => w.vi && w.vi.trim() !== '');
-            return validWords[Math.floor(Math.random() * validWords.length)]; 
+        // HÀM LỌC TỪ VỰNG THÔNG MINH (TRÁNH LỖI DẤU ...)
+        function getValidWordPool(langCode) {
+            // Chỉ lấy những dòng có chứa Tiếng Việt VÀ chứa Ngôn ngữ mục tiêu
+            return vocabList.filter(w => w.vi && w.vi.trim() !== '' && w[langCode] && w[langCode].trim() !== '');
         }
         
         function formatWordWithPronunciation(wordObj, langCode) {
@@ -424,14 +416,16 @@
         }
 
         function loadType() {
-            currentWord = getRandomWord(); currentLangForTurn = pickRandomActiveLang(); 
+            currentLangForTurn = pickRandomActiveLang(); 
+            let pool = getValidWordPool(currentLangForTurn);
+            if(pool.length === 0) { alert("Không có dữ liệu cho ngôn ngữ này!"); return; }
+            
+            currentWord = pool[Math.floor(Math.random() * pool.length)]; 
+            
             document.getElementById('type-vi').innerText = currentWord.vi;
             let hintText = `👉 Hãy gõ ${getLangName(currentLangForTurn)}`;
-            
             let pronKey = currentLangForTurn + '_pronunciation';
-            if(currentWord[pronKey] && currentWord[pronKey].trim() !== '') {
-                hintText += ` (Đọc là: ${currentWord[pronKey]})`;
-            }
+            if(currentWord[pronKey] && currentWord[pronKey].trim() !== '') { hintText += ` (Đọc là: ${currentWord[pronKey]})`; }
             
             document.getElementById('type-hint').innerText = hintText;
             document.getElementById('type-input').value = ""; document.getElementById('type-result').innerText = ""; document.getElementById('type-extra').style.display = 'none';
@@ -446,15 +440,17 @@
         }
 
         function loadQuiz() {
-            currentWord = getRandomWord(); currentLangForTurn = pickRandomActiveLang();
+            currentLangForTurn = pickRandomActiveLang();
+            let pool = getValidWordPool(currentLangForTurn);
+            if(pool.length === 0) { alert("Không có dữ liệu cho ngôn ngữ này!"); return; }
+            
+            currentWord = pool[Math.floor(Math.random() * pool.length)];
+            
             document.getElementById('quiz-vi').innerText = currentWord.vi; document.getElementById('quiz-hint').innerText = `👉 Hãy chọn ${getLangName(currentLangForTurn)}`;
             document.getElementById('quiz-result').innerText = ""; document.getElementById('quiz-extra').style.display = 'none';
+            
             let options = [currentWord];
-            
-            // Lọc ra danh sách từ vựng hợp lệ để làm đáp án nhiễu
-            let pool = (currentAppMode === 'zh') ? vocabList.filter(w => w.zh && w.zh.trim() !== '') : vocabList;
-            
-            while(options.length < 4) { 
+            while(options.length < 4 && options.length < pool.length) { 
                 let randomW = pool[Math.floor(Math.random() * pool.length)]; 
                 if(!options.includes(randomW)) options.push(randomW); 
             }
@@ -475,7 +471,11 @@
         }
 
         function loadListen() {
-            currentWord = getRandomWord(); currentLangForTurn = pickRandomActiveLang();
+            currentLangForTurn = pickRandomActiveLang();
+            let pool = getValidWordPool(currentLangForTurn);
+            if(pool.length === 0) { alert("Không có dữ liệu cho ngôn ngữ này!"); return; }
+            currentWord = pool[Math.floor(Math.random() * pool.length)];
+            
             document.getElementById('listen-hint').innerText = `👉 Đang phát ${getLangName(currentLangForTurn)}`;
             document.getElementById('listen-input').value = ""; document.getElementById('listen-result').innerText = ""; document.getElementById('listen-extra').style.display = 'none';
             playCurrentAudio();
@@ -490,7 +490,11 @@
         }
 
         function loadSpeak() {
-            currentWord = getRandomWord(); currentLangForTurn = pickRandomActiveLang();
+            currentLangForTurn = pickRandomActiveLang();
+            let pool = getValidWordPool(currentLangForTurn);
+            if(pool.length === 0) { alert("Không có dữ liệu cho ngôn ngữ này!"); return; }
+            currentWord = pool[Math.floor(Math.random() * pool.length)];
+            
             document.getElementById('speak-target').innerHTML = formatWordWithPronunciation(currentWord, currentLangForTurn);
             document.getElementById('speak-hint').innerText = `👉 Hãy đọc bằng ${getLangName(currentLangForTurn)}`;
             document.getElementById('speak-vi').innerText = currentWord.vi; document.getElementById('speak-transcript').innerText = "..."; document.getElementById('speak-result').innerText = "";
@@ -519,24 +523,27 @@
         function loadMatch() {
             let board = document.getElementById('match-board'); board.innerHTML = ''; firstSel = null; matches = 0;
             
-            // Bốc 4 từ ngẫu nhiên KHÔNG TRÙNG NHAU
             let shuffled = [];
-            let tempVocab = [...vocabList];
-            if (currentAppMode === 'zh') tempVocab = tempVocab.filter(w => w.zh && w.zh.trim() !== '');
+            // Lấy ngôn ngữ cho ván này
+            let langForThisMatch = pickRandomActiveLang();
+            // Lọc ra các từ hợp lệ (Có tiếng Việt VÀ có ngôn ngữ mục tiêu)
+            let validPool = getValidWordPool(langForThisMatch);
+            
+            if(validPool.length === 0) { alert("Không đủ dữ liệu để chơi!"); return; }
 
+            // Bốc 4 từ ngẫu nhiên KHÔNG TRÙNG NHAU
             for(let i=0; i<4; i++) { 
-                if(tempVocab.length === 0) break;
-                let randIndex = Math.floor(Math.random() * tempVocab.length);
-                shuffled.push(tempVocab[randIndex]);
-                tempVocab.splice(randIndex, 1); // Xóa từ đã bốc để không bị trùng
+                if(validPool.length === 0) break;
+                let randIndex = Math.floor(Math.random() * validPool.length);
+                shuffled.push(validPool[randIndex]);
+                validPool.splice(randIndex, 1); // Xóa khỏi pool tạm để không bốc trùng
             }
             
             let btns = [];
             shuffled.forEach(w => {
-                let randomLang = pickRandomActiveLang();
-                btns.push({ text: w.vi, id: w[randomLang], lang: 'vi' });
-                let displayText = formatWordWithPronunciation(w, randomLang);
-                btns.push({ text: displayText, id: w[randomLang], lang: randomLang });
+                btns.push({ text: w.vi, id: w[langForThisMatch], lang: 'vi' });
+                let displayText = formatWordWithPronunciation(w, langForThisMatch);
+                btns.push({ text: displayText, id: w[langForThisMatch], lang: langForThisMatch });
             });
             
             btns.sort(() => 0.5 - Math.random());
