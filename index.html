@@ -3,53 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App: Nail, Books & Chinese</title>
+    <title>Super App v6.0: Nail, Books & Chinese</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; color: #333;}
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .header { font-size: 22px; font-weight: bold; color: #2c3e50; margin: 0; display: flex; align-items: center; gap: 10px;}
-        .version-badge { background: #e74c3c; color: white; font-size: 12px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+        .version-badge { background: #27ae60; color: white; font-size: 13px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
         .btn-settings { background: #ecf0f1; border: none; padding: 8px 12px; border-radius: 8px; font-size: 18px; cursor: pointer;}
+        
         #app-selector { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         .big-btn { padding: 25px 15px; border-radius: 20px; font-size: 18px; font-weight: bold; color: white; border: none; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.15); transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px;}
         .big-btn:active { transform: scale(0.95); }
         .btn-nail { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%); color: #d63031; border: 2px solid #ff7675;}
         .btn-book { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #4a235a; border: 2px solid #9b59b6;}
         .btn-chinese { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); color: #fff; border: 2px solid #c0392b;}
+        
         .screen { display: none; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 300px; position: relative;}
         .active-screen { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from {opacity: 0; transform: scale(0.95);} to {opacity: 1; transform: scale(1);} }
-        .btn-back { position: absolute; top: 15px; left: 15px; background: #ecf0f1; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 10;}
-        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;}
+        @keyframes fadeIn { from {opacity: 0; transform: scale(0.98);} to {opacity: 1; transform: scale(1);} }
+        
+        /* THANH CÔNG CỤ TRÊN CÙNG CỦA MỖI MÀN HÌNH (NÚT QUAY LẠI & NGÔI SAO) */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .btn-back { background: #ecf0f1; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        .btn-star { background: #f8f9fa; border: 2px solid #ddd; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer; color: #666; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
+        .btn-star.starred { background: #fff9db; border-color: #f1c40f; color: #d35400; box-shadow: 0 2px 8px rgba(241, 196, 15, 0.3); }
+
+        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;}
         .btn-primary { background: #3498db; color: white; }
         .btn-success { background: #2ecc71; color: white; }
         .btn-warning { background: #f1c40f; color: #333; }
-        .sub-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 40px; }
+        
+        .sub-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         .menu-card { background: white; padding: 20px 10px; border-radius: 15px; cursor: pointer; border-bottom: 4px solid #ddd; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
         .menu-icon { font-size: 30px; margin-bottom: 10px; }
+        
         .lang-selector { background: #f8f9fa; padding: 15px 10px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #2ecc71;}
         .lang-options { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px;}
         .lang-btn { padding: 8px 15px; border: 2px solid #ccc; border-radius: 20px; background: white; color: #777; cursor: pointer; font-weight: bold; font-size: 13px;}
         .lang-btn.selected { background: #2ecc71; color: white; border-color: #27ae60; }
-        .word-display { font-size: 28px; font-weight: bold; color: #e74c3c; margin: 40px 0 5px 0; }
+        
+        .word-display { font-size: 28px; font-weight: bold; color: #e74c3c; margin: 25px 0 5px 0; }
         .lang-hint { font-size: 14px; font-weight: bold; color: #3498db; margin-bottom: 20px; text-transform: uppercase;}
         input.nail-input { width: 90%; padding: 15px; border: 2px solid #bdc3c7; border-radius: 10px; font-size: 18px; text-align: center; outline: none; margin-bottom: 15px;}
+        
         .quiz-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .quiz-btn { background: #f8f9fa; border: 2px solid #bdc3c7; color: #2c3e50; }
         .quiz-btn.correct { background: #2ecc71; color: white; }
         .quiz-btn.wrong { background: #e74c3c; color: white; }
+        
         .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .match-btn { padding: 15px 5px; border: 2px solid #bdc3c7; border-radius: 10px; background: white; font-size: 14px; font-weight: bold; cursor: pointer; }
         .match-btn.selected { border-color: #3498db; background: #e8f4f8; }
         .match-btn.matched { opacity: 0; pointer-events: none; }
+        
         .extra-info { font-size: 13px; color: #7f8c8d; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; line-height: 1.5;}
         .pronunciation-text { color: #7f8c8d; font-weight: normal; font-size: 0.9em; margin-left: 6px; font-style: italic;}
+        
+        /* ========================================== */
+        /* CSS MỚI CHO PHẦN SÁCH (ĐIỀN KHUYẾT 10 Ô & GHÉP CÂU DÀI) */
+        /* ========================================== */
         .book-menu-card { grid-column: span 2; border-color: #9b59b6; }
-        .book-sentence { font-size: 22px; line-height: 1.5; color: #2c3e50; margin: 40px 0 20px 0; font-weight: 500;}
-        .cloze-blank { border-bottom: 3px solid #e74c3c; color: transparent; padding: 0 10px; display: inline-block; min-width: 50px; }
-        .cloze-input { font-size: 20px; padding: 10px; text-align: center; border: 2px solid #9b59b6; border-radius: 8px; width: 80%; margin-bottom: 20px; outline:none;}
-        .scramble-area { min-height: 80px; border: 2px dashed #ccc; border-radius: 10px; padding: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start;}
-        .word-piece { background: #3498db; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; border: none; font-size: 16px;}
+        
+        .book-passage { font-size: 18px; line-height: 2.0; color: #2c3e50; text-align: left; background: #fcfcfc; padding: 18px; border-radius: 12px; border: 1px solid #e0e0e0; margin-bottom: 15px; white-space: pre-wrap;}
+        
+        /* Ô trống trong đoạn văn */
+        .cloze-slot { display: inline-block; min-width: 90px; padding: 2px 10px; margin: 0 4px; border-bottom: 3px solid #3498db; background: #ebf5fb; color: #2980b9; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; transition: 0.2s; line-height: 1.4;}
+        .cloze-slot.active-slot { border-bottom-color: #e67e22; background: #fef9e7; color: #d35400; box-shadow: 0 0 0 2px #f39c12; }
+        .cloze-slot.filled { background: #d4efdf; color: #1e8449; border-bottom-color: #27ae60; }
+        .cloze-slot.correct-slot { background: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; }
+        .cloze-slot.wrong-slot { background: #e74c3c !important; color: white !important; border-color: #c0392b !important; }
+
+        /* Kho từ vựng bên dưới để bấm chọn */
+        .word-bank-container { background: #f0f3f4; padding: 15px; border-radius: 12px; margin-bottom: 15px; min-height: 60px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .bank-word-btn { background: white; border: 2px solid #3498db; color: #2980b9; padding: 8px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .bank-word-btn:hover { background: #ebf5fb; }
+        .bank-word-btn.used { opacity: 0.25; pointer-events: none; border-color: #ccc; color: #999; }
+
+        /* CSS Ghép Câu Dài (Scramble) */
+        .scramble-area { min-height: 100px; border: 2px dashed #9b59b6; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; background: #faf5ff;}
+        .sentence-piece { background: white; color: #2c3e50; padding: 12px 15px; border-radius: 10px; font-weight: 500; cursor: pointer; border: 2px solid #dcdde1; border-left: 6px solid #3498db; font-size: 16px; text-align: left; line-height: 1.4; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;}
+        .sentence-piece:hover { border-color: #3498db; background: #f8fbff; }
+        .sentence-piece.in-answer { border-left-color: #2ecc71; background: #f0fff4; }
+        
         #settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 15px; width: 85%; max-width: 400px; text-align: left; }
         .setting-group { margin-bottom: 15px; }
@@ -60,7 +96,7 @@
 <body>
 
     <div class="header-container">
-        <div class="header">🧠 Super App <span class="version-badge">v4.4</span></div>
+        <div class="header">🧠 Super App <span class="version-badge">v6.0 🌟</span></div>
         <button class="btn-settings" onclick="openSettings()">⚙️</button>
     </div>
     
@@ -77,8 +113,9 @@
 
     <!-- PHẦN 1: GIAO DIỆN MENU TỪ VỰNG -->
     <div id="screen-vocab-menu" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
-        <div style="margin-top: 40px;"></div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
+        </div>
         <div class="lang-selector" id="nail-lang-selector">
             <div style="font-size: 14px; font-weight: bold; color: #555;">Chọn ngôn ngữ luyện tập:</div>
             <div class="lang-options" id="dynamic-lang-options"></div>
@@ -94,7 +131,10 @@
 
     <!-- Các màn hình Game Từ Vựng -->
     <div id="screen-type" class="screen">
-        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+            <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
+        </div>
         <div class="word-display" id="type-vi">Tiếng Việt</div>
         <div class="lang-hint" id="type-hint">Đang tải...</div>
         <input type="text" id="type-input" class="nail-input" placeholder="Gõ đáp án vào đây...">
@@ -105,7 +145,10 @@
     </div>
 
     <div id="screen-quiz" class="screen">
-        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+            <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
+        </div>
         <div class="word-display" id="quiz-vi">Tiếng Việt</div>
         <div class="lang-hint" id="quiz-hint">Đang tải...</div>
         <div class="quiz-grid" id="quiz-options"></div>
@@ -114,8 +157,11 @@
     </div>
 
     <div id="screen-listen" class="screen">
-        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
-        <div style="margin: 50px 0 10px 0;"><button class="btn-action btn-primary" style="font-size: 50px; padding: 20px; border-radius: 50%; width: 100px; height: 100px;" onclick="playCurrentAudio()">🔊</button></div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+            <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
+        </div>
+        <div style="margin: 20px 0 10px 0;"><button class="btn-action btn-primary" style="font-size: 50px; padding: 20px; border-radius: 50%; width: 100px; height: 100px;" onclick="playCurrentAudio()">🔊</button></div>
         <div class="lang-hint" id="listen-hint" style="margin-bottom: 20px;">Đang tải...</div>
         <input type="text" id="listen-input" class="nail-input" placeholder="Bạn nghe được chữ gì?">
         <button class="btn-action btn-success" onclick="checkListen()">Kiểm tra</button>
@@ -125,7 +171,10 @@
     </div>
 
     <div id="screen-speak" class="screen">
-        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+            <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
+        </div>
         <div class="word-display" id="speak-target" style="color: #2980b9;">Word</div>
         <div class="lang-hint" id="speak-hint">Đang tải...</div>
         <div style="font-size: 16px; color: #7f8c8d; margin-bottom: 20px;" id="speak-vi">Nghĩa tiếng Việt</div>
@@ -136,48 +185,83 @@
     </div>
 
     <div id="screen-match" class="screen">
-        <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
-        <div style="margin-top: 40px; font-size: 14px; color: #666; margin-bottom: 10px;">Ghép cặp tương ứng</div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
+        </div>
+        <div style="font-size: 14px; color: #666; margin-bottom: 10px;">Ghép cặp tương ứng (Ưu tiên từ gắn ⭐)</div>
         <div class="match-grid" id="match-board"></div>
         <button class="btn-action btn-primary" style="margin-top: 20px;" onclick="loadMatch()">🔄 Ván mới</button>
     </div>
 
-    <!-- PHẦN 2: GIAO DIỆN SÁCH -->
+    <!-- ========================================== -->
+    <!-- PHẦN 2: GIAO DIỆN HỌC TÓM TẮT SÁCH (NÂNG CẤP v6.0) -->
+    <!-- ========================================== -->
     <div id="screen-book-menu" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
+        <div class="top-bar">
+            <button class="btn-back" onclick="openScreen('screen-home')">⬅ Home</button>
+        </div>
         <div class="sub-menu" style="grid-template-columns: 1fr;">
-            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-cloze')"><div class="menu-icon">📝</div>Điền Khuyết Từ Khóa</div>
-            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-trigger')"><div class="menu-icon">💡</div>Từ Khóa Kích Hoạt</div>
-            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-scramble')"><div class="menu-icon">🧩</div>Xếp Hình Tư Duy</div>
+            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-cloze')"><div class="menu-icon">📝</div>1. Điền Khuyết (Chọn Từ Vào Các Ô Trống)</div>
+            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-trigger')"><div class="menu-icon">💡</div>2. Từ Khóa Kích Hoạt (Nhớ Lại Ý Chính)</div>
+            <div class="menu-card book-menu-card" onclick="openScreen('screen-book-scramble')"><div class="menu-icon">🧩</div>3. Xếp Hình Tư Duy (Ghép Các Câu Dài)</div>
         </div>
     </div>
 
+    <!-- CÔNG CỤ SÁCH 1: ĐIỀN KHUYẾT NHIỀU Ô TRỐNG BẰNG CÁCH CHỌN TỪ -->
     <div id="screen-book-cloze" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
-        <div class="book-sentence" id="cloze-text">Đang tải...</div>
-        <input type="text" id="cloze-input" class="cloze-input" placeholder="Gõ từ khóa bị thiếu...">
-        <button class="btn-action btn-success" onclick="checkCloze()">Kiểm tra</button>
-        <button class="btn-action btn-warning" onclick="loadCloze()">Bỏ qua ➡️</button>
-        <div id="cloze-result" style="font-weight: bold; margin-top: 15px; font-size: 18px;"></div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
+            <button class="btn-star" onclick="toggleStar('book')">☆ Đánh dấu sao</button>
+        </div>
+        <div style="font-size: 13px; color: #666; margin-bottom: 8px; text-align: left;">
+            👉 <b>Hướng dẫn:</b> Chạm vào các từ khóa bên dưới để điền vào các chỗ trống. (Chạm vào chỗ trống đã điền nếu muốn đổi từ khác).
+        </div>
+        
+        <!-- Đoạn văn có nhiều chỗ trống -->
+        <div class="book-passage" id="cloze-text">Đang tải...</div>
+        
+        <!-- Kho từ khóa bên dưới để bấm chọn -->
+        <div style="font-size: 13px; font-weight: bold; color: #2980b9; margin-bottom: 5px; text-align: left;">👇 Chọn từ khóa dưới đây để điền vào đoạn trống:</div>
+        <div class="word-bank-container" id="cloze-word-bank"></div>
+
+        <button class="btn-action btn-success" onclick="checkCloze()">✅ Kiểm tra đáp án</button>
+        <button class="btn-action btn-primary" onclick="revealClozeAnswer()">👀 Tự động điền đáp án đúng</button>
+        <button class="btn-action btn-warning" onclick="loadCloze()">Câu / Đoạn tiếp theo ➡️</button>
+        <div id="cloze-result" style="font-weight: bold; margin-top: 10px; font-size: 16px;"></div>
     </div>
 
+    <!-- CÔNG CỤ SÁCH 2: TỪ KHÓA KÍCH HOẠT -->
     <div id="screen-book-trigger" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
-        <div style="margin-top: 50px; color: #7f8c8d;">Khi thấy từ khóa này, bạn nhớ đến câu nào?</div>
-        <div style="font-size: 40px; font-weight: bold; color: #e67e22; margin: 20px 0;" id="trigger-keyword">Từ khóa</div>
-        <div id="trigger-answer" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 10px; font-size: 20px; color: #2c3e50; border-left: 5px solid #2ecc71; margin-bottom: 20px;">Đáp án</div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
+            <button class="btn-star" onclick="toggleStar('book')">☆ Đánh dấu sao</button>
+        </div>
+        <div style="margin-top: 20px; color: #7f8c8d;">Khi thấy từ khóa này, bạn nhớ đến nội dung nào?</div>
+        <div style="font-size: 32px; font-weight: bold; color: #e67e22; margin: 20px 0;" id="trigger-keyword">Từ khóa</div>
+        <div id="trigger-answer" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 10px; font-size: 18px; line-height: 1.6; text-align: left; color: #2c3e50; border-left: 5px solid #2ecc71; margin-bottom: 20px; white-space: pre-wrap;">Đáp án</div>
         <button class="btn-action btn-primary" id="btn-show-trigger" onclick="showTriggerAnswer()">👀 Xem Đáp Án</button>
         <button class="btn-action btn-warning" style="display: none;" id="btn-next-trigger" onclick="loadTrigger()">Câu tiếp theo ➡️</button>
     </div>
 
+    <!-- CÔNG CỤ SÁCH 3: XẾP HÌNH TƯ DUY (GHÉP CÁC CÂU DÀI) -->
     <div id="screen-book-scramble" class="screen">
-        <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
-        <div style="margin-top: 40px; margin-bottom: 10px; font-weight: bold;">Sắp xếp lại câu:</div>
+        <div class="top-bar">
+            <button class="btn-back" onclick="openScreen('screen-book-menu')">⬅ Menu Sách</button>
+            <button class="btn-star" onclick="toggleStar('book')">☆ Đánh dấu sao</button>
+        </div>
+        <div style="margin-bottom: 8px; font-weight: bold; text-align: left; color: #2c3e50;">
+            🧩 Bấm chọn từng câu/mệnh đề bên dưới để sắp xếp theo đúng thứ tự:
+        </div>
+        
+        <div style="font-size: 12px; color: #27ae60; text-align: left; margin-bottom: 4px; font-weight: bold;">▲ Thứ tự bạn đã ghép (Chạm vào câu để bỏ chọn):</div>
         <div class="scramble-area" id="scramble-answer-area"></div>
-        <div class="scramble-area" id="scramble-pool-area" style="border-color: transparent; background: #f0f3f4;"></div>
-        <button class="btn-action btn-success" onclick="checkScramble()">Kiểm tra</button>
-        <button class="btn-action btn-warning" onclick="loadScramble()">Bỏ qua ➡️</button>
-        <div id="scramble-result" style="font-weight: bold; margin-top: 15px; font-size: 18px;"></div>
+        
+        <div style="font-size: 12px; color: #2980b9; text-align: left; margin-bottom: 4px; font-weight: bold;">▼ Các câu / ý đang bị xáo trộn:</div>
+        <div class="scramble-area" id="scramble-pool-area" style="border-color: #bdc3c7; background: #f0f3f4;"></div>
+        
+        <button class="btn-action btn-success" onclick="checkScramble()">✅ Kiểm tra thứ tự</button>
+        <button class="btn-action btn-warning" onclick="loadScramble()">Câu / Đoạn tiếp theo ➡️</button>
+        <div id="scramble-result" style="font-weight: bold; margin-top: 10px; font-size: 16px;"></div>
     </div>
 
     <!-- MODAL CÀI ĐẶT -->
@@ -195,15 +279,15 @@
         // ==========================================
         // THAY LINK API CỦA BẠN VÀO DÒNG BÊN DƯỚI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxiUNtz2Iz_Op5-Rs_VMNu4A6IR2-LKouQae6R6ya7O6iHPyTUHiR0DuFMW-8m-9Ga09A/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzT12dQsRwqZG7SJjFkZzUzKtEg7IWGLdtQv4tRIZtGvc3WNi0EUQuikJoiNQbFassu8w/exec"; 
         
-        let vocabList = [];
-        let bookData = [];
-        let currentAppMode = ''; 
-        let currentWord = {};
-        let activeLangs = []; 
-        let allAvailableLangs = [];
-        let currentLangForTurn = ''; 
+        // Tự động hủy Service Worker cũ để trình duyệt không bao giờ bị kẹt giao diện cũ nữa
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => { for(let r of regs) r.unregister(); });
+        }
+
+        let vocabList = []; let bookData = []; let currentAppMode = ''; 
+        let currentWord = {}; let activeLangs = []; let allAvailableLangs = []; let currentLangForTurn = ''; 
         const langConfig = {
             'en': { name: 'Tiếng Anh', flag: '🇬🇧', speechCode: 'en' },
             'tl': { name: 'Tagalog', flag: '🇵🇭', speechCode: 'tl' },
@@ -211,9 +295,70 @@
             'zh': { name: 'Tiếng Trung', flag: '🇨🇳', speechCode: 'zh' }
         };
 
-        let currentBookItem = {}; let scrambleWords = []; let userSelectedWords = [];
+        let currentBookItem = {};
         let availableVoices = []; let selectedVoices = { 'en': null, 'tl': null, 'zh': null };
 
+        // ==========================================
+        // HỆ THỐNG AI ĐÁNH DẤU SAO (ƯU TIÊN ÔN TẬP)
+        // ==========================================
+        let starredVocab = JSON.parse(localStorage.getItem('starredVocab')) || [];
+        let starredBooks = JSON.parse(localStorage.getItem('starredBooks')) || [];
+
+        function toggleStar(type) {
+            if (type === 'vocab' && currentWord) {
+                let id = currentWord.vi;
+                let idx = starredVocab.indexOf(id);
+                if (idx > -1) starredVocab.splice(idx, 1);
+                else starredVocab.push(id);
+                localStorage.setItem('starredVocab', JSON.stringify(starredVocab));
+                updateStarUI('vocab');
+            } else if (type === 'book' && currentBookItem) {
+                let id = currentBookItem.sentence;
+                let idx = starredBooks.indexOf(id);
+                if (idx > -1) starredBooks.splice(idx, 1);
+                else starredBooks.push(id);
+                localStorage.setItem('starredBooks', JSON.stringify(starredBooks));
+                updateStarUI('book');
+            }
+        }
+
+        function updateStarUI(type) {
+            let isStarred = false;
+            if (type === 'vocab' && currentWord) isStarred = starredVocab.includes(currentWord.vi);
+            if (type === 'book' && currentBookItem) isStarred = starredBooks.includes(currentBookItem.sentence);
+
+            document.querySelectorAll('.btn-star').forEach(btn => {
+                if (isStarred) { 
+                    btn.innerText = '⭐ Đã ưu tiên ôn tập (x4)'; 
+                    btn.classList.add('starred'); 
+                } else { 
+                    btn.innerText = '☆ Đánh dấu sao'; 
+                    btn.classList.remove('starred'); 
+                }
+            });
+        }
+
+        function pickSmartWord(pool) {
+            let weightedPool = [];
+            pool.forEach(w => {
+                weightedPool.push(w);
+                if (starredVocab.includes(w.vi)) weightedPool.push(w, w, w);
+            });
+            return weightedPool[Math.floor(Math.random() * weightedPool.length)];
+        }
+
+        function pickSmartBook() {
+            let weightedPool = [];
+            bookData.forEach(b => {
+                weightedPool.push(b);
+                if (starredBooks.includes(b.sentence)) weightedPool.push(b, b, b);
+            });
+            return weightedPool[Math.floor(Math.random() * weightedPool.length)];
+        }
+
+        // ==========================================
+        // HỆ THỐNG GIỌNG ĐỌC & TẢI DỮ LIỆU
+        // ==========================================
         function populateVoiceList() {
             availableVoices = window.speechSynthesis.getVoices();
             if(availableVoices.length === 0) return;
@@ -245,12 +390,7 @@
             let u = new SpeechSynthesisUtterance(testText); u.voice = availableVoices[voiceIndex]; window.speechSynthesis.speak(u);
         }
 
-        // ==========================================
-        // TẢI DỮ LIỆU TỪ API (CÓ TÍNH NĂNG CHỐNG CACHE)
-        // ==========================================
-        // Thêm ?t=... để ép trình duyệt luôn tải dữ liệu mới nhất từ Google Sheets
         let noCacheUrl = API_URL + "?t=" + new Date().getTime();
-        
         fetch(noCacheUrl)
             .then(res => res.json())
             .then(data => {
@@ -314,14 +454,8 @@
             updateLangButtonsUI();
         }
 
-        function pickRandomActiveLang() { 
-            if(currentAppMode === 'zh') return 'zh'; return activeLangs[Math.floor(Math.random() * activeLangs.length)]; 
-        }
         function getLangName(langCode) { return langConfig[langCode] ? langConfig[langCode].name : langCode.toUpperCase(); }
-        
-        function getValidWordPool(langCode) {
-            return vocabList.filter(w => w.vi && w.vi.trim() !== '' && w[langCode] && w[langCode].trim() !== '');
-        }
+        function getValidWordPool(langCode) { return vocabList.filter(w => w.vi && w.vi.trim() !== '' && w[langCode] && w[langCode].trim() !== ''); }
         
         function formatWordWithPronunciation(wordObj, langCode) {
             let text = wordObj[langCode] || '...'; let pronKey = langCode + '_pronunciation'; 
@@ -347,11 +481,14 @@
             window.speechSynthesis.speak(u);
         }
 
+        // --- CÁC GAME TỪ VỰNG ---
         function loadType() {
             let playableLangs = activeLangs.filter(l => getValidWordPool(l).length >= 1);
-            if(playableLangs.length === 0) { alert("❌ Bạn chưa nhập dữ liệu cho ngôn ngữ này. Hãy vào Google Sheets nhập thêm nhé!"); goBackToMenu(); return; }
+            if(playableLangs.length === 0) { alert("❌ Bạn chưa nhập dữ liệu cho ngôn ngữ này!"); goBackToMenu(); return; }
             currentLangForTurn = playableLangs[Math.floor(Math.random() * playableLangs.length)]; 
-            let pool = getValidWordPool(currentLangForTurn); currentWord = pool[Math.floor(Math.random() * pool.length)]; 
+            let pool = getValidWordPool(currentLangForTurn); 
+            currentWord = pickSmartWord(pool); updateStarUI('vocab');
+
             document.getElementById('type-vi').innerText = currentWord.vi;
             let hintText = `👉 Hãy gõ ${getLangName(currentLangForTurn)}`; let pronKey = currentLangForTurn + '_pronunciation';
             if(currentWord[pronKey] && currentWord[pronKey].trim() !== '') { hintText += ` (Đọc là: ${currentWord[pronKey]})`; }
@@ -371,7 +508,9 @@
             let playableLangs = activeLangs.filter(l => getValidWordPool(l).length >= 4);
             if(playableLangs.length === 0) { alert("❌ Cần nhập ít nhất 4 từ vựng để chơi Trắc Nghiệm!"); goBackToMenu(); return; }
             currentLangForTurn = playableLangs[Math.floor(Math.random() * playableLangs.length)];
-            let pool = getValidWordPool(currentLangForTurn); currentWord = pool[Math.floor(Math.random() * pool.length)];
+            let pool = getValidWordPool(currentLangForTurn); 
+            currentWord = pickSmartWord(pool); updateStarUI('vocab');
+
             document.getElementById('quiz-vi').innerText = currentWord.vi; document.getElementById('quiz-hint').innerText = `👉 Hãy chọn ${getLangName(currentLangForTurn)}`;
             document.getElementById('quiz-result').innerText = ""; document.getElementById('quiz-extra').style.display = 'none';
             let options = [currentWord];
@@ -397,7 +536,9 @@
             let playableLangs = activeLangs.filter(l => getValidWordPool(l).length >= 1);
             if(playableLangs.length === 0) { alert("❌ Không có dữ liệu để chơi!"); goBackToMenu(); return; }
             currentLangForTurn = playableLangs[Math.floor(Math.random() * playableLangs.length)];
-            let pool = getValidWordPool(currentLangForTurn); currentWord = pool[Math.floor(Math.random() * pool.length)];
+            let pool = getValidWordPool(currentLangForTurn); 
+            currentWord = pickSmartWord(pool); updateStarUI('vocab');
+
             document.getElementById('listen-hint').innerText = `👉 Đang phát ${getLangName(currentLangForTurn)}`;
             document.getElementById('listen-input').value = ""; document.getElementById('listen-result').innerText = ""; document.getElementById('listen-extra').style.display = 'none';
             playCurrentAudio();
@@ -415,7 +556,9 @@
             let playableLangs = activeLangs.filter(l => getValidWordPool(l).length >= 1);
             if(playableLangs.length === 0) { alert("❌ Không có dữ liệu để chơi!"); goBackToMenu(); return; }
             currentLangForTurn = playableLangs[Math.floor(Math.random() * playableLangs.length)];
-            let pool = getValidWordPool(currentLangForTurn); currentWord = pool[Math.floor(Math.random() * pool.length)];
+            let pool = getValidWordPool(currentLangForTurn); 
+            currentWord = pickSmartWord(pool); updateStarUI('vocab');
+
             document.getElementById('speak-target').innerHTML = formatWordWithPronunciation(currentWord, currentLangForTurn);
             document.getElementById('speak-hint').innerText = `👉 Hãy đọc bằng ${getLangName(currentLangForTurn)}`;
             document.getElementById('speak-vi').innerText = currentWord.vi; document.getElementById('speak-transcript').innerText = "..."; document.getElementById('speak-result').innerText = "";
@@ -451,13 +594,15 @@
             let shuffled = [];
             for(let i=0; i<4; i++) { 
                 if(validPool.length === 0) break;
-                let randIndex = Math.floor(Math.random() * validPool.length);
-                shuffled.push(validPool[randIndex]); validPool.splice(randIndex, 1); 
+                let picked = pickSmartWord(validPool);
+                shuffled.push(picked);
+                validPool = validPool.filter(w => w.vi !== picked.vi); 
             }
             
             let btns = [];
             shuffled.forEach(w => {
-                btns.push({ text: w.vi, id: w[langForThisMatch], lang: 'vi' });
+                let starIcon = starredVocab.includes(w.vi) ? '⭐ ' : '';
+                btns.push({ text: starIcon + w.vi, id: w[langForThisMatch], lang: 'vi' });
                 let displayText = formatWordWithPronunciation(w, langForThisMatch);
                 btns.push({ text: displayText, id: w[langForThisMatch], lang: langForThisMatch });
             });
@@ -481,66 +626,321 @@
         }
 
         // ==========================================
-        // LOGIC SÁCH
+        // LOGIC HỌC TÓM TẮT SÁCH NÂNG CẤP (v6.0)
         // ==========================================
-        function getRandomBook() { return bookData[Math.floor(Math.random() * bookData.length)]; }
+        
+        // --- 1. ĐIỀN KHUYẾT NHIỀU Ô TRỐNG (CHỌN TỪ BÊN DƯỚI) ---
+        let clozeSlots = []; 
+        let clozePool = [];  
+        let clozeTemplate = "";
+        let activeSlotIdx = 0;
 
         function loadCloze() {
-            if(bookData.length === 0) { alert("Chưa có dữ liệu Sách!"); return;}
-            currentBookItem = getRandomBook();
-            let regex = new RegExp(currentBookItem.keyword, "gi");
-            document.getElementById('cloze-text').innerHTML = currentBookItem.sentence.replace(regex, `<span class="cloze-blank">____</span>`);
-            document.getElementById('cloze-input').value = ""; document.getElementById('cloze-result').innerText = "";
-        }
-        function checkCloze() {
-            let input = document.getElementById('cloze-input').value.trim().toLowerCase(); let answer = currentBookItem.keyword.toLowerCase();
-            if(input === answer) {
-                document.getElementById('cloze-result').innerHTML = "✅ Chính xác!"; document.getElementById('cloze-result').style.color = "green";
-                document.getElementById('cloze-text').innerHTML = currentBookItem.sentence; setTimeout(loadCloze, 2500);
-            } else { document.getElementById('cloze-result').innerHTML = `❌ Sai! Gợi ý bắt đầu bằng: "${currentBookItem.keyword.charAt(0)}"`; document.getElementById('cloze-result').style.color = "red"; }
+            if(bookData.length === 0) { alert("Chưa có dữ liệu Sách!"); return; }
+            currentBookItem = pickSmartBook();
+            updateStarUI('book');
+            document.getElementById('cloze-result').innerText = "";
+
+            initMultiCloze(currentBookItem.sentence, currentBookItem.keyword || "");
+            renderClozeUI();
         }
 
+        function initMultiCloze(sentence, keywordStr) {
+            clozeSlots = [];
+            clozePool = [];
+            activeSlotIdx = 0;
+
+            let userKws = keywordStr.split(/[,;\n]+/).map(s => s.trim()).filter(s => s.length > 1);
+            let tempText = sentence;
+            let blankAnswers = [];
+
+            // Ưu tiên đục lỗ các từ khóa người dùng chỉ định
+            userKws.forEach(kw => {
+                if (blankAnswers.length >= 10) return;
+                let escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                let regex = new RegExp(escaped, "i");
+                let match = tempText.match(regex);
+                if (match) {
+                    let placeholder = `___SLOT_${blankAnswers.length}___`;
+                    blankAnswers.push(match[0]);
+                    tempText = tempText.replace(regex, placeholder);
+                }
+            });
+
+            // Nếu đoạn văn dài mà chưa đủ 10 chỗ trống, AI tự động trích thêm các cụm từ quan trọng (tối đa 10 ô trống)
+            let tokens = tempText.split(/\s+/);
+            if (blankAnswers.length < 10 && tokens.length > 6) {
+                let targetBlanks = Math.min(10, Math.max(2, Math.floor(tokens.length / 7)));
+                let needed = targetBlanks - blankAnswers.length;
+                if (needed > 0) {
+                    let validIndices = [];
+                    for (let i = 0; i < tokens.length - 1; i++) {
+                        let w1 = tokens[i], w2 = tokens[i+1];
+                        if (!w1.includes("___SLOT_") && !w2.includes("___SLOT_") &&
+                            /^[a-zA-ZÀ-ỹ0-9]+$/.test(w1) && /^[a-zA-ZÀ-ỹ0-9]+$/.test(w2)) {
+                            validIndices.push(i);
+                            i++; 
+                        }
+                    }
+                    if (validIndices.length > 0) {
+                        let step = Math.max(1, Math.floor(validIndices.length / needed));
+                        let pickedCount = 0;
+                        for (let j = 0; j < validIndices.length && pickedCount < needed; j += step) {
+                            let idx = validIndices[j];
+                            let phrase = tokens[idx] + " " + tokens[idx+1];
+                            let slotId = blankAnswers.length;
+                            blankAnswers.push(phrase);
+                            tokens[idx] = `___SLOT_${slotId}___`;
+                            tokens[idx+1] = "";
+                            pickedCount++;
+                        }
+                        tempText = tokens.filter(t => t !== "").join(" ");
+                    }
+                }
+            }
+
+            // Nếu câu quá ngắn và từ khóa không khớp, lấy đại từ cuối
+            if (blankAnswers.length === 0 && tokens.length > 0) {
+                let lastIdx = tokens.length - 1;
+                blankAnswers.push(tokens[lastIdx]);
+                tokens[lastIdx] = "___SLOT_0___";
+                tempText = tokens.join(" ");
+            }
+
+            // Đánh số thứ tự các ô trống từ 1 -> 10 theo đúng mạch văn bản
+            let orderedSlots = [];
+            let newIndex = 0;
+            clozeTemplate = tempText.replace(/___SLOT_(\d+)___/g, (match, oldIdx) => {
+                let ans = blankAnswers[parseInt(oldIdx)];
+                orderedSlots.push({ id: newIndex, answer: ans, userVal: null, poolIdx: null, status: '' });
+                return `___ORDERED_SLOT_${newIndex++}___`;
+            });
+
+            clozeSlots = orderedSlots;
+            clozePool = clozeSlots.map((s, idx) => ({ poolIdx: idx, text: s.answer, used: false }));
+            clozePool.sort(() => Math.random() - 0.5);
+        }
+
+        function renderClozeUI() {
+            // Render đoạn văn và các ô trống
+            let htmlPassage = clozeTemplate.replace(/___ORDERED_SLOT_(\d+)___/g, (match, idxStr) => {
+                let idx = parseInt(idxStr);
+                let slot = clozeSlots[idx];
+                let classes = "cloze-slot";
+                if (idx === activeSlotIdx && !slot.userVal) classes += " active-slot";
+                if (slot.userVal) classes += " filled";
+                if (slot.status === 'correct') classes += " correct-slot";
+                if (slot.status === 'wrong') classes += " wrong-slot";
+
+                let displayTxt = slot.userVal ? slot.userVal : `(${idx + 1}) ____`;
+                return `<span class="${classes}" onclick="handleSlotClick(${idx})">${displayTxt}</span>`;
+            });
+            document.getElementById('cloze-text').innerHTML = htmlPassage;
+
+            // Render kho từ khóa bên dưới
+            let bankEl = document.getElementById('cloze-word-bank');
+            bankEl.innerHTML = '';
+            clozePool.forEach(item => {
+                let btn = document.createElement('button');
+                btn.className = 'bank-word-btn' + (item.used ? ' used' : '');
+                btn.innerText = item.text;
+                btn.onclick = () => selectWordForCloze(item.poolIdx);
+                bankEl.appendChild(btn);
+            });
+        }
+
+        function handleSlotClick(slotIdx) {
+            let slot = clozeSlots[slotIdx];
+            if (slot.userVal !== null) {
+                // Nếu ô đã có từ, bấm vào sẽ trả từ đó về lại Kho bên dưới
+                let poolItem = clozePool.find(p => p.poolIdx === slot.poolIdx);
+                if (poolItem) poolItem.used = false;
+                slot.userVal = null;
+                slot.poolIdx = null;
+                slot.status = '';
+            }
+            activeSlotIdx = slotIdx;
+            renderClozeUI();
+        }
+
+        function selectWordForCloze(poolIdx) {
+            let poolItem = clozePool.find(p => p.poolIdx === poolIdx);
+            if (!poolItem || poolItem.used) return;
+
+            // Tìm ô trống đang chọn (hoặc ô trống đầu tiên chưa điền)
+            let targetSlot = clozeSlots[activeSlotIdx];
+            if (!targetSlot || targetSlot.userVal !== null) {
+                targetSlot = clozeSlots.find(s => s.userVal === null);
+            }
+            if (!targetSlot) return; // Tất cả các ô đã được điền kín
+
+            targetSlot.userVal = poolItem.text;
+            targetSlot.poolIdx = poolItem.poolIdx;
+            targetSlot.status = '';
+            poolItem.used = true;
+
+            // Tự động nhảy con trỏ sang ô trống tiếp theo
+            let nextEmpty = clozeSlots.find(s => s.userVal === null);
+            if (nextEmpty) activeSlotIdx = nextEmpty.id;
+
+            renderClozeUI();
+        }
+
+        function checkCloze() {
+            let correctCount = 0;
+            clozeSlots.forEach(slot => {
+                if (slot.userVal && slot.userVal.trim().toLowerCase() === slot.answer.trim().toLowerCase()) {
+                    slot.status = 'correct';
+                    correctCount++;
+                } else {
+                    slot.status = 'wrong';
+                }
+            });
+            renderClozeUI();
+
+            let resEl = document.getElementById('cloze-result');
+            if (correctCount === clozeSlots.length) {
+                resEl.innerHTML = `🎉 Xuất sắc! Bạn đã điền đúng tuyệt đối ${correctCount}/${clozeSlots.length} chỗ trống!`;
+                resEl.style.color = "green";
+            } else {
+                resEl.innerHTML = `⚠️ Bạn đúng ${correctCount}/${clozeSlots.length} chỗ trống. Chạm vào các ô màu đỏ để chọn lại nhé!`;
+                resEl.style.color = "#d35400";
+            }
+        }
+
+        function revealClozeAnswer() {
+            clozeSlots.forEach(slot => {
+                slot.userVal = slot.answer;
+                slot.status = 'correct';
+            });
+            clozePool.forEach(p => p.used = true);
+            renderClozeUI();
+            document.getElementById('cloze-result').innerHTML = "👀 Đã hiển thị toàn bộ đáp án đúng!";
+            document.getElementById('cloze-result').style.color = "#2980b9";
+        }
+
+        // --- 2. TỪ KHÓA KÍCH HOẠT ---
         function loadTrigger() {
             if(bookData.length === 0) return;
-            currentBookItem = getRandomBook();
+            currentBookItem = pickSmartBook();
+            updateStarUI('book');
             document.getElementById('trigger-keyword').innerText = currentBookItem.keyword;
             document.getElementById('trigger-answer').innerText = currentBookItem.sentence;
             document.getElementById('trigger-answer').style.display = 'none';
-            document.getElementById('btn-show-trigger').style.display = 'block'; document.getElementById('btn-next-trigger').style.display = 'none';
+            document.getElementById('btn-show-trigger').style.display = 'block';
+            document.getElementById('btn-next-trigger').style.display = 'none';
         }
         function showTriggerAnswer() {
             document.getElementById('trigger-answer').style.display = 'block';
-            document.getElementById('btn-show-trigger').style.display = 'none'; document.getElementById('btn-next-trigger').style.display = 'block';
+            document.getElementById('btn-show-trigger').style.display = 'none';
+            document.getElementById('btn-next-trigger').style.display = 'block';
+        }
+
+        // --- 3. XẾP HÌNH TƯ DUY (TÁCH THEO CÂU DÀI / MỆNH ĐỀ DÀI) ---
+        let scrambleChunks = [];
+        let userSelectedChunks = [];
+
+        function splitIntoLongSentences(text) {
+            // Tách theo câu hoặc ý lớn (dấu chấm, chấm phẩy, xuống dòng, gạch đầu dòng)
+            let parts = text.split(/(?<=[.!?;:\n])\s+|\s*(?=[•\-]\s)/g)
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+            
+            // Nếu chỉ có 1 câu ngắn, tách theo dấu phẩy
+            if (parts.length <= 1) {
+                parts = text.split(/(?<=[,])\s+/g).map(s => s.trim()).filter(s => s.length > 0);
+            }
+            // Nếu câu không có dấu phẩy nào, chia thành 3-4 cụm từ dài (mỗi cụm 4-6 chữ)
+            if (parts.length <= 1) {
+                let words = text.trim().split(/\s+/);
+                parts = [];
+                let chunkSize = Math.max(3, Math.ceil(words.length / 4));
+                for (let i = 0; i < words.length; i += chunkSize) {
+                    parts.push(words.slice(i, i + chunkSize).join(" "));
+                }
+            }
+
+            // Nếu đoạn văn quá dài tạo ra quá nhiều câu, gộp các câu liền kề để chỉ còn tối đa 6 - 8 mảnh ghép lớn
+            while (parts.length > 8) {
+                let merged = [];
+                for (let i = 0; i < parts.length; i += 2) {
+                    if (i + 1 < parts.length) merged.push(parts[i] + " " + parts[i+1]);
+                    else merged.push(parts[i]);
+                }
+                parts = merged;
+            }
+            return parts;
         }
 
         function loadScramble() {
             if(bookData.length === 0) return;
-            currentBookItem = getRandomBook(); document.getElementById('scramble-result').innerText = "";
-            scrambleWords = currentBookItem.sentence.trim().split(" "); userSelectedWords = [];
-            let shuffledWords = [...scrambleWords].sort(() => Math.random() - 0.5);
-            renderScramblePool(shuffledWords); renderScrambleAnswer();
+            currentBookItem = pickSmartBook(); 
+            updateStarUI('book');
+            document.getElementById('scramble-result').innerText = "";
+            
+            scrambleChunks = splitIntoLongSentences(currentBookItem.sentence);
+            userSelectedChunks = [];
+            
+            let shuffled = scrambleChunks.map((txt, idx) => ({ origIdx: idx, text: txt }));
+            shuffled.sort(() => Math.random() - 0.5);
+            
+            renderScramblePool(shuffled);
+            renderScrambleAnswer();
         }
-        function renderScramblePool(words) {
-            let pool = document.getElementById('scramble-pool-area'); pool.innerHTML = '';
-            words.forEach((word, index) => {
-                let btn = document.createElement('button'); btn.className = 'word-piece'; btn.innerText = word;
-                btn.onclick = () => selectWord(word, btn); pool.appendChild(btn);
+
+        function renderScramblePool(chunkObjs) {
+            let pool = document.getElementById('scramble-pool-area');
+            pool.innerHTML = '';
+            chunkObjs.forEach(obj => {
+                let btn = document.createElement('button');
+                btn.className = 'sentence-piece';
+                btn.innerText = obj.text;
+                btn.onclick = () => selectChunk(obj, btn);
+                pool.appendChild(btn);
             });
         }
+
         function renderScrambleAnswer() {
-            let answerArea = document.getElementById('scramble-answer-area'); answerArea.innerHTML = '';
-            userSelectedWords.forEach((wordObj, index) => {
-                let btn = document.createElement('button'); btn.className = 'word-piece'; btn.innerText = wordObj.word;
-                btn.onclick = () => deselectWord(index, wordObj.btnRef); answerArea.appendChild(btn);
+            let answerArea = document.getElementById('scramble-answer-area');
+            answerArea.innerHTML = '';
+            userSelectedChunks.forEach((item, index) => {
+                let btn = document.createElement('button');
+                btn.className = 'sentence-piece in-answer';
+                btn.innerHTML = `<b>#${index + 1}:</b> ${item.text}`;
+                btn.onclick = () => deselectChunk(index, item.btnRef);
+                answerArea.appendChild(btn);
             });
         }
-        function selectWord(word, btnRef) { btnRef.style.display = 'none'; userSelectedWords.push({ word: word, btnRef: btnRef }); renderScrambleAnswer(); }
-        function deselectWord(index, btnRef) { btnRef.style.display = 'inline-block'; userSelectedWords.splice(index, 1); renderScrambleAnswer(); }
+
+        function selectChunk(obj, btnRef) {
+            btnRef.style.display = 'none';
+            userSelectedChunks.push({ origIdx: obj.origIdx, text: obj.text, btnRef: btnRef });
+            renderScrambleAnswer();
+        }
+
+        function deselectChunk(index, btnRef) {
+            btnRef.style.display = 'block';
+            userSelectedChunks.splice(index, 1);
+            renderScrambleAnswer();
+        }
+
         function checkScramble() {
-            let userSentence = userSelectedWords.map(obj => obj.word).join(" "); let correctSentence = currentBookItem.sentence.trim();
-            if(userSentence === correctSentence) {
-                document.getElementById('scramble-result').innerHTML = "✅ Tuyệt vời!"; document.getElementById('scramble-result').style.color = "green"; setTimeout(loadScramble, 2500);
-            } else { document.getElementById('scramble-result').innerHTML = "❌ Chưa đúng thứ tự!"; document.getElementById('scramble-result').style.color = "red"; }
+            let resEl = document.getElementById('scramble-result');
+            if (userSelectedChunks.length < scrambleChunks.length) {
+                resEl.innerHTML = "⚠️ Bạn hãy bấm chọn hết các mảnh câu bên dưới lên khung trả lời nhé!";
+                resEl.style.color = "#e67e22";
+                return;
+            }
+            let userText = userSelectedChunks.map(c => c.text).join(" ");
+            let correctText = scrambleChunks.join(" ");
+            if (userText === correctText) {
+                resEl.innerHTML = "🎉 Tuyệt vời! Bạn đã sắp xếp đúng hoàn toàn mạch tư duy của đoạn văn!";
+                resEl.style.color = "green";
+                setTimeout(loadScramble, 3000);
+            } else {
+                resEl.innerHTML = "❌ Thứ tự các ý chưa chuẩn. Hãy chạm vào câu bị lệch để sắp xếp lại nhé!";
+                resEl.style.color = "red";
+            }
         }
     </script>
 </body>
