@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v7.0: Nail, Books & Chinese</title>
+    <title>Super App v7.1: Nail, Books & Chinese</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; color: #333;}
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .header { font-size: 22px; font-weight: bold; color: #2c3e50; margin: 0; display: flex; align-items: center; gap: 10px;}
-        .version-badge { background: #2980b9; color: white; font-size: 13px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
+        .version-badge { background: #8e44ad; color: white; font-size: 13px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
         .btn-settings { background: #ecf0f1; border: none; padding: 8px 12px; border-radius: 8px; font-size: 18px; cursor: pointer;}
         
         #app-selector { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
@@ -44,12 +44,12 @@
         .lang-btn.all-mode.selected { background: #2980b9; border-color: #1f618d; color: white; }
 
         /* ========================================== */
-        /* CSS THẺ ĐA NGÔN NGỮ 6 HÀNG CHUẨN XÁC */
+        /* CSS THẺ ĐA NGÔN NGỮ 6 HÀNG & BÔI ĐEN TƯƠNG ỨNG (v7.1) */
         /* ========================================== */
-        .six-row-box { background: #ffffff; border: 2px solid #e0e6ed; border-radius: 12px; padding: 12px 15px; margin: 12px 0; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
-        .s-row { padding: 7px 6px; border-bottom: 1px dashed #ecf0f1; display: flex; align-items: baseline; gap: 8px; line-height: 1.4; }
+        .six-row-box { background: #ffffff; border: 2px solid #e0e6ed; border-radius: 12px; padding: 12px 15px; margin: 10px 0; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
+        .s-row { padding: 8px 6px; border-bottom: 1px dashed #ecf0f1; display: flex; align-items: baseline; gap: 8px; line-height: 1.5; }
         .s-row:last-child { border-bottom: none; }
-        .s-num { font-size: 12px; font-weight: bold; color: #7f8c8d; min-width: 115px; flex-shrink: 0; }
+        .s-num { font-size: 12px; font-weight: bold; color: #7f8c8d; min-width: 118px; flex-shrink: 0; }
         .s-val { font-size: 16px; flex: 1; word-break: break-word; }
         
         .s-row.r-vi { background: #fff5f5; border-radius: 6px; border-bottom: 2px solid #fadbd8; margin-bottom: 4px; }
@@ -60,7 +60,15 @@
         .s-row.r-tl-p .s-val { font-size: 15px; color: #16a085; font-style: italic; font-weight: 600; }
         .s-row.r-ilo .s-val { font-size: 16px; font-weight: bold; color: #27ae60; }
 
-        /* Hiển thị 6 hàng thu gọn bên trong nút Trắc Nghiệm và Nối Từ */
+        /* TỪNG TỪ TƯƠNG TÁC ĐỂ CHẠM HOẶC BÔI ĐEN */
+        .word-tok { display: inline-block; padding: 1px 4px; margin: 0 1px; border-radius: 5px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+        .word-tok:hover { background: #eef6ff; border-color: #bdd7f5; }
+        .word-tok.hl-active { background: #ffeb3b !important; color: #c0392b !important; font-weight: bold !important; border-color: #f39c12 !important; box-shadow: 0 2px 6px rgba(243, 156, 18, 0.45); transform: scale(1.05); }
+
+        /* HỘP GIẢI NGHĨA TỪ ĐANG BÔI ĐEN / CHẠM */
+        .word-inspector { background: #fffdf2; border: 2px solid #f1c40f; border-radius: 10px; padding: 12px 15px; margin: 8px 0 12px 0; text-align: left; font-size: 14px; line-height: 1.6; display: none; box-shadow: 0 3px 10px rgba(241, 196, 15, 0.15); animation: fadeIn 0.2s;}
+        .inspector-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #f39c12; padding-bottom: 6px; margin-bottom: 6px; font-weight: bold; color: #d35400; font-size: 15px;}
+
         .compact-multi-list { text-align: left; width: 100%; display: flex; flex-direction: column; gap: 3px; font-weight: normal; }
         .cm-row { font-size: 13.5px; line-height: 1.35; padding: 2px 4px; border-radius: 4px; }
         .cm-vi { font-size: 16px; font-weight: bold; color: #c0392b; background: #fff5f5; padding: 4px 6px; border-left: 3px solid #e74c3c; }
@@ -74,7 +82,6 @@
         .btn-mini-audio { background: #ebf5fb; border: 1px solid #3498db; color: #2980b9; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .btn-mini-audio:hover { background: #d6eaf8; }
 
-        .word-display { font-size: 26px; font-weight: bold; color: #e74c3c; margin: 15px 0 5px 0; }
         .lang-hint { font-size: 14px; font-weight: bold; color: #3498db; margin-bottom: 12px; text-transform: uppercase;}
         input.nail-input { width: 90%; padding: 14px; border: 2px solid #bdc3c7; border-radius: 10px; font-size: 17px; text-align: center; outline: none; margin-bottom: 12px;}
         
@@ -117,10 +124,10 @@
         .setting-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; outline: none; }
     </style>
 </head>
-<body>
+<body onmouseup="handleTextSelection()">
 
     <div class="header-container">
-        <div class="header">🧠 Super App <span class="version-badge">v7.0 🌐</span></div>
+        <div class="header">🧠 Super App <span class="version-badge">v7.1 🔍</span></div>
         <button class="btn-settings" onclick="openSettings()">⚙️</button>
     </div>
     
@@ -148,7 +155,7 @@
 
         <div class="sub-menu" id="vocab-sub-menu">
             <div class="menu-card" style="border-color: #16a085; grid-column: span 2; background: #e8f8f5;" onclick="openScreen('screen-flashcard')">
-                <div class="menu-icon">🗂️</div>Thẻ Học Toàn Diện (Đủ 6 Hàng Đa Ngôn Ngữ)
+                <div class="menu-icon">🗂️</div>Thẻ Học Toàn Diện (Đủ 6 Hàng & Chạm/Bôi Đen Tra Nghĩa)
             </div>
             <div class="menu-card" style="border-color: #3498db;" onclick="openScreen('screen-type')"><div class="menu-icon">⌨️</div>Luyện Gõ</div>
             <div class="menu-card" style="border-color: #9b59b6;" onclick="openScreen('screen-match')"><div class="menu-icon">🎮</div>Nối Từ</div>
@@ -158,14 +165,18 @@
         </div>
     </div>
 
-    <!-- MÀN HÌNH MỚI: THẺ HỌC TOÀN DIỆN 6 HÀNG -->
+    <!-- MÀN HÌNH THẺ HỌC TOÀN DIỆN 6 HÀNG -->
     <div id="screen-flashcard" class="screen">
         <div class="top-bar">
             <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
             <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
         </div>
-        <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Bảng từ vựng chuẩn 6 hàng (Khớp chính xác từng dòng Google Sheets):</div>
+        <div style="font-size: 13px; color: #d35400; font-weight: bold; margin-bottom: 5px;">
+            💡 Chạm vào (hoặc bôi đen) BẤT KỲ TỪ NÀO dưới đây để tự động bôi vàng từ và phiên âm tương ứng ở các hàng khác!
+        </div>
         <div id="flashcard-six-rows"></div>
+        <!-- Hộp giải nghĩa từ đang chọn -->
+        <div id="word-inspector-flashcard" class="word-inspector"></div>
         <div class="audio-bar" id="flashcard-audio-bar"></div>
         <button class="btn-action btn-primary" style="margin-top: 10px;" onclick="loadFlashcard()">Từ tiếp theo ➡️</button>
     </div>
@@ -176,10 +187,12 @@
             <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
             <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
         </div>
-        <div style="display:flex; justify-content:flex-end; margin-bottom:5px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; flex-wrap:wrap; gap:5px;">
+            <span style="font-size:12px; color:#d35400; font-weight:bold;">💡 Chạm vào từ bất kỳ để dò nghĩa & phiên âm tương ứng</span>
             <button id="btn-toggle-peek" class="btn-mini-audio" onclick="toggleTypePeek()">👁️ Đang hiện đủ 6 hàng (Bấm để ẩn/hiện)</button>
         </div>
         <div id="type-six-rows"></div>
+        <div id="word-inspector-type" class="word-inspector"></div>
         <div class="lang-hint" id="type-hint">Đang tải...</div>
         <input type="text" id="type-input" class="nail-input" placeholder="Gõ từ vào đây...">
         <button class="btn-action btn-success" onclick="checkType()">Kiểm tra</button>
@@ -199,6 +212,7 @@
         <div class="quiz-grid" id="quiz-options"></div>
         <div id="quiz-result" style="font-weight: bold; margin-top: 10px;"></div>
         <div id="quiz-extra" class="extra-info"></div>
+        <div id="word-inspector-quiz" class="word-inspector"></div>
     </div>
 
     <!-- GAME 3: NGHE MÙ (TÍCH HỢP 6 HÀNG) -->
@@ -217,6 +231,7 @@
         <button class="btn-action btn-warning" onclick="loadListen()">Từ tiếp theo ➡️</button>
         <div id="listen-result" style="font-weight: bold; margin-top: 10px;"></div>
         <div id="listen-extra" class="extra-info"></div>
+        <div id="word-inspector-listen" class="word-inspector"></div>
     </div>
 
     <!-- GAME 4: AI LUYỆN NÓI (HIỂN THỊ ĐỦ 6 HÀNG) -->
@@ -225,7 +240,11 @@
             <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
             <button class="btn-star" onclick="toggleStar('vocab')">☆ Đánh dấu sao</button>
         </div>
+        <div style="font-size: 12px; color: #d35400; font-weight: bold; margin-bottom: 4px;">
+            💡 Chạm vào từ bất kỳ trong bảng để bôi vàng phiên âm & nghe phát âm riêng từ đó!
+        </div>
         <div id="speak-six-rows"></div>
+        <div id="word-inspector-speak" class="word-inspector"></div>
         <div class="audio-bar" id="speak-audio-bar"></div>
         <div class="lang-hint" id="speak-hint">Đang tải...</div>
         <button class="btn-action btn-success" id="btn-mic" style="font-size: 20px; padding: 18px;" onclick="startDictation()">🎤 Bấm để Nói</button>
@@ -234,7 +253,7 @@
         <button class="btn-action btn-warning" style="margin-top: 12px;" onclick="loadSpeak()">Từ tiếp theo ➡️</button>
     </div>
 
-    <!-- GAME 5: NỐI TỪ (TÍCH HỢP 6 HÀNG & NGÔI SAO) -->
+    <!-- GAME 5: NỐI TỪ -->
     <div id="screen-match" class="screen">
         <div class="top-bar">
             <button class="btn-back" onclick="goBackToMenu()">⬅ Menu</button>
@@ -322,7 +341,7 @@
         // ==========================================
         // THAY LINK API CỦA BẠN VÀO DÒNG BÊN DƯỚI
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxNPZrNW1YwSj1O3Fv_zm7NX0yRZXRq1V9IHUCAYK_6KZsYTSbiyMvrltEzD5_HlaMT/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwPth9JQnxSQhU0sPAm8kKUJ0iacHzrAMX3HTvKUCgbo05s1du40kZW639XHpkVw55I1A/exec"; 
         
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(regs => { for(let r of regs) r.unregister(); });
@@ -330,8 +349,6 @@
 
         let vocabList = []; let bookData = []; let currentAppMode = ''; 
         let currentWord = {}; 
-        
-        // Chế độ học Nail: 'ALL' (Tích hợp đủ 6 hàng) hoặc chuyên biệt 'en', 'tl', 'ilo'
         let nailStudyMode = 'ALL'; 
         let currentLangForTurn = 'en'; 
         let showFullRowsInType = true;
@@ -423,66 +440,274 @@
         }
 
         // ==========================================
-        // HÀM HIỂN THỊ CHUẨN 6 HÀNG ĐA NGÔN NGỮ (KHỚP 100% VỊ TRÍ & NGHĨA)
+        // CÔNG NGHỆ TƯƠNG TÁC TỪNG TỪ & TỰ ĐỘNG BÔI VÀNG CHÉO 6 HÀNG (v7.1)
         // ==========================================
-        // Hàng 1: Tiếng Việt (vi)
-        // Hàng 2: Tiếng Anh (en)
-        // Hàng 3: Phát âm Tiếng Anh (en_pronunciation)
-        // Hàng 4: Tiếng Tagalog (tl)
-        // Hàng 5: Phát âm Tiếng Tagalog (tl_pronunciation - nếu có)
-        // Hàng 6: Tiếng Ilocano (ilo - nếu có)
+        // Biến một chuỗi câu thành các thẻ <span class="word-tok"> có thể bấm hoặc bôi đen
+        function tokenizeRowText(text, rowType) {
+            if (!text) return '';
+            let tokens = text.trim().split(/\s+/);
+            let total = tokens.length;
+            return tokens.map((tok, idx) => {
+                let cleanTok = tok.replace(/^[.,;?!()[\]"']+|[,.;?!()[\]"']+$/g, '');
+                let safeClean = cleanTok.replace(/'/g, "\\'");
+                return `<span class="word-tok" data-row="${rowType}" data-idx="${idx}" data-total="${total}" data-clean="${cleanTok.toLowerCase()}" onclick="onWordTokenClick(event, '${rowType}', ${idx}, ${total}, '${safeClean}')">${tok}</span>`;
+            }).join(' ');
+        }
+
+        // Khi người dùng bôi đen bằng chuột trên màn hình
+        function handleTextSelection() {
+            let sel = window.getSelection();
+            if (!sel || sel.isCollapsed) return;
+            let selectedText = sel.toString().trim();
+            if (selectedText.length > 1 && selectedText.length < 60 && currentWord) {
+                let anchorNode = sel.anchorNode ? sel.anchorNode.parentElement : null;
+                if (anchorNode && anchorNode.classList && anchorNode.classList.contains('word-tok')) {
+                    let rType = anchorNode.dataset.row;
+                    let idx = parseInt(anchorNode.dataset.idx);
+                    let total = parseInt(anchorNode.dataset.total);
+                    highlightAcrossSixRows(selectedText, rType, idx, total);
+                }
+            }
+        }
+
+        function onWordTokenClick(e, rowType, idx, total, cleanWord) {
+            e.stopPropagation();
+            if (!cleanWord) return;
+            highlightAcrossSixRows(cleanWord, rowType, idx, total);
+        }
+
+        // Hàm cốt lõi: Bôi vàng từ được chọn + Phiên âm tương ứng + Tự động dịch & bôi vàng nghĩa ở các hàng khác
+        async function highlightAcrossSixRows(selectedWord, sourceRow, idx, total) {
+            document.querySelectorAll('.word-tok').forEach(el => el.classList.remove('hl-active'));
+            let cleanLower = selectedWord.toLowerCase().trim();
+
+            // 1. Bôi vàng tất cả các từ giống hệt từ vừa chọn (Ví dụ: Proof ở Hàng 2 và (Proof ở Hàng 4)
+            document.querySelectorAll('.word-tok').forEach(el => {
+                if (el.dataset.clean === cleanLower && cleanLower.length > 0) {
+                    el.classList.add('hl-active');
+                }
+            });
+
+            // 2. Đồng bộ 1-1 ngay lập tức giữa Từ Vựng và Hàng Phiên Âm của nó (Hàng 2 <-> Hàng 3, Hàng 4 <-> Hàng 5)
+            let pairedRowMap = {
+                'en': 'en_pron', 'en_pron': 'en',
+                'tl': 'tl_pron', 'tl_pron': 'tl',
+                'zh': 'zh_pron', 'zh_pron': 'zh'
+            };
+            let pairedRow = pairedRowMap[sourceRow];
+            if (pairedRow) {
+                highlightTokenByRatio(pairedRow, idx, total);
+            }
+
+            // 3. Bôi vàng sơ bộ theo tỷ lệ vị trí trên các hàng ngôn ngữ khác
+            ['vi', 'en', 'en_pron', 'tl', 'tl_pron', 'ilo'].forEach(r => {
+                if (r !== sourceRow && r !== pairedRow) {
+                    highlightTokenByRatio(r, idx, total);
+                }
+            });
+
+            // 4. Mở Hộp Giải Nghĩa Từ Đang Chọn và dùng AI Dịch Tự Động để tinh chỉnh chính xác 100% từ tương ứng
+            showInspectorLoading(selectedWord, sourceRow);
+
+            try {
+                // Dịch từ đang chọn sang Tiếng Việt và Tiếng Anh bằng Google Translate API miễn phí
+                let [viTrans, enTrans, tlTrans] = await Promise.all([
+                    translateSingleTerm(selectedWord, 'vi'),
+                    translateSingleTerm(selectedWord, 'en'),
+                    translateSingleTerm(selectedWord, 'tl')
+                ]);
+
+                // Nếu tìm thấy từ dịch nằm trong câu gốc của Hàng 1 (vi), Hàng 2 (en), Hàng 4 (tl), ưu tiên bôi vàng chính xác từ đó!
+                refineRowHighlightByMeaning('vi', viTrans);
+                if (refineRowHighlightByMeaning('en', enTrans)) {
+                    syncPhoneticFromWordRow('en', 'en_pron');
+                }
+                if (refineRowHighlightByMeaning('tl', tlTrans)) {
+                    syncPhoneticFromWordRow('tl', 'tl_pron');
+                }
+
+                // Lấy phiên âm tương ứng đang sáng để hiển thị vào Hộp Giải Nghĩa
+                let activeEnPron = getHighlightedTextInRow('en_pron');
+                let activeTlPron = getHighlightedTextInRow('tl_pron');
+
+                renderInspectorResult(selectedWord, sourceRow, {
+                    vi: viTrans,
+                    en: enTrans,
+                    enPron: activeEnPron,
+                    tl: tlTrans,
+                    tlPron: activeTlPron
+                });
+            } catch (err) {
+                // Nếu mạng yếu, vẫn giữ nguyên kết quả bôi vàng theo vị trí
+            }
+        }
+
+        function highlightTokenByRatio(targetRow, sourceIdx, sourceTotal) {
+            let rowTokens = document.querySelectorAll(`.word-tok[data-row="${targetRow}"]`);
+            if (rowTokens.length === 0) return;
+            let targetTotal = rowTokens.length;
+
+            // Nếu số lượng từ bằng nhau (như giữa từ gốc và phiên âm gạch nối), khớp chính xác 1-1!
+            if (targetTotal === sourceTotal && rowTokens[sourceIdx]) {
+                rowTokens[sourceIdx].classList.add('hl-active');
+                return;
+            }
+            // Nếu câu dài hơn (ví dụ Tiếng Việt nhiều chữ hơn Tiếng Anh), bôi vàng cụm từ tương ứng theo tỷ lệ
+            let startRatio = sourceIdx / sourceTotal;
+            let endRatio = (sourceIdx + 1) / sourceTotal;
+            let startIdx = Math.floor(startRatio * targetTotal);
+            let endIdx = Math.max(startIdx, Math.ceil(endRatio * targetTotal) - 1);
+            for (let i = startIdx; i <= endIdx && i < targetTotal; i++) {
+                rowTokens[i].classList.add('hl-active');
+            }
+        }
+
+        function refineRowHighlightByMeaning(targetRow, translatedPhrase) {
+            if (!translatedPhrase) return false;
+            let rowTokens = Array.from(document.querySelectorAll(`.word-tok[data-row="${targetRow}"]`));
+            if (rowTokens.length === 0) return false;
+
+            let transWords = translatedPhrase.toLowerCase().replace(/[.,;?!()]/g, '').split(/\s+/).filter(w => w.length > 1);
+            let matchedElements = [];
+
+            rowTokens.forEach(el => {
+                let tokClean = el.dataset.clean;
+                if (tokClean && transWords.some(tw => tw === tokClean || (tw.length > 3 && tokClean.includes(tw)))) {
+                    matchedElements.push(el);
+                }
+            });
+
+            // Nếu tìm thấy từ khớp chính xác theo nghĩa từ điển, cập nhật lại bôi vàng của hàng đó
+            if (matchedElements.length > 0) {
+                rowTokens.forEach(el => el.classList.remove('hl-active'));
+                matchedElements.forEach(el => el.classList.add('hl-active'));
+                return true;
+            }
+            return false;
+        }
+
+        function syncPhoneticFromWordRow(wordRow, pronRow) {
+            let wordTokens = Array.from(document.querySelectorAll(`.word-tok[data-row="${wordRow}"]`));
+            let pronTokens = Array.from(document.querySelectorAll(`.word-tok[data-row="${pronRow}"]`));
+            if (wordTokens.length === 0 || pronTokens.length === 0) return;
+
+            pronTokens.forEach(el => el.classList.remove('hl-active'));
+            wordTokens.forEach((el, i) => {
+                if (el.classList.contains('hl-active')) {
+                    highlightTokenByRatio(pronRow, i, wordTokens.length);
+                }
+            });
+        }
+
+        function getHighlightedTextInRow(rowType) {
+            let hl = Array.from(document.querySelectorAll(`.word-tok[data-row="${rowType}"].hl-active`));
+            return hl.map(el => el.innerText).join(' ');
+        }
+
+        async function translateSingleTerm(text, targetLang) {
+            let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+            let res = await fetch(url);
+            let data = await res.json();
+            return (data && data[0] && data[0][0]) ? data[0][0][0] : '';
+        }
+
+        function getActiveInspectorBox() {
+            let activeScreen = document.querySelector('.screen.active-screen');
+            if (!activeScreen) return null;
+            return activeScreen.querySelector('.word-inspector');
+        }
+
+        function showInspectorLoading(word, sourceRow) {
+            let box = getActiveInspectorBox();
+            if (!box) return;
+            box.style.display = 'block';
+            box.innerHTML = `<div class="inspector-header"><span>🔍 Đang phân tích từ: "${word}"...</span></div>`;
+        }
+
+        function renderInspectorResult(word, sourceRow, info) {
+            let box = getActiveInspectorBox();
+            if (!box) return;
+            let safeWord = word.replace(/'/g, "\\'");
+            let speakLang = (sourceRow.startsWith('tl')) ? 'tl' : (sourceRow.startsWith('zh') ? 'zh' : 'en');
+
+            let matchVi = getHighlightedTextInRow('vi') || info.vi;
+            let matchEn = getHighlightedTextInRow('en') || info.en;
+            let matchEnP = info.enPron ? ` <i style="color:#d35400;">(${info.enPron})</i>` : '';
+            let matchTl = getHighlightedTextInRow('tl') || info.tl;
+            let matchTlP = info.tlPron ? ` <i style="color:#16a085;">(${info.tlPron})</i>` : '';
+
+            box.style.display = 'block';
+            box.innerHTML = `
+                <div class="inspector-header">
+                    <span>🎯 Từ đang chọn: <b style="color:#c0392b; font-size:17px;">${word}</b></span>
+                    <button class="btn-mini-audio" onclick="speakCustomText('${safeWord}', '${speakLang}')">🔊 Nghe riêng từ này</button>
+                </div>
+                <div>🇻🇳 <b>Nghĩa Tiếng Việt:</b> <span style="color:#c0392b; font-weight:bold;">${info.vi}</span> ${matchVi && matchVi.toLowerCase() !== info.vi.toLowerCase() ? `(Khớp trong câu: <b>${matchVi}</b>)` : ''}</div>
+                <div>🇬🇧 <b>Tiếng Anh tương ứng:</b> <b style="color:#2980b9;">${matchEn}</b>${matchEnP}</div>
+                <div>🇵🇭 <b>Tagalog tương ứng:</b> <b style="color:#8e44ad;">${matchTl}</b>${matchTlP}</div>
+            `;
+        }
+
+        function speakCustomText(text, langCode) {
+            let u = new SpeechSynthesisUtterance(text);
+            if (selectedVoices[langCode]) u.voice = selectedVoices[langCode];
+            else u.lang = langConfig[langCode] ? langConfig[langCode].speechCode : 'en';
+            window.speechSynthesis.speak(u);
+        }
+
+        // ==========================================
+        // HÀM HIỂN THỊ CHUẨN 6 HÀNG ĐA NGÔN NGỮ (CÓ TƯƠNG TÁC TỪNG TỪ)
+        // ==========================================
         function buildSixRowCardHTML(w, options = {}) {
             if (!w) return '';
-            let hideLang = options.hideLang || null; // Ẩn dòng đang đố nếu cần
+            let hideLang = options.hideLang || null;
 
-            // Nếu đang ở chế độ Học Tiếng Trung
             if (currentAppMode === 'zh') {
                 let html = `<div class="six-row-box">`;
-                html += `<div class="s-row r-vi"><span class="s-num">1. 🇻🇳 Tiếng Việt:</span><span class="s-val">${w.vi || ''}</span></div>`;
+                html += `<div class="s-row r-vi"><span class="s-num">1. 🇻🇳 Tiếng Việt:</span><span class="s-val">${tokenizeRowText(w.vi, 'vi')}</span></div>`;
                 if (hideLang !== 'zh') {
-                    html += `<div class="s-row r-en"><span class="s-num">2. 🇨🇳 Tiếng Trung:</span><span class="s-val">${w.zh || ''}</span></div>`;
+                    html += `<div class="s-row r-en"><span class="s-num">2. 🇨🇳 Tiếng Trung:</span><span class="s-val">${tokenizeRowText(w.zh, 'zh')}</span></div>`;
                 } else {
                     html += `<div class="s-row r-en"><span class="s-num">2. 🇨🇳 Tiếng Trung:</span><span class="s-val" style="color:#95a5a6;">[ Đang ẩn để gõ ]</span></div>`;
                 }
                 if (w.zh_pronunciation && w.zh_pronunciation.trim() !== '') {
-                    html += `<div class="s-row r-en-p"><span class="s-num">3. 🗣 Phiên âm:</span><span class="s-val">${w.zh_pronunciation}</span></div>`;
+                    html += `<div class="s-row r-en-p"><span class="s-num">3. 🗣 Phiên âm:</span><span class="s-val">${tokenizeRowText(w.zh_pronunciation, 'zh_pron')}</span></div>`;
                 }
                 html += `</div>`;
                 return html;
             }
 
-            // Chế độ Học Từ Vựng Nail: Bắt buộc đúng thứ tự 6 Hàng
             let tlPron = w.tl_pronunciation || w.tl_pron || '';
             let html = `<div class="six-row-box">`;
             
             // Hàng 1: Tiếng Việt
-            html += `<div class="s-row r-vi"><span class="s-num">Hàng 1 (🇻🇳 Việt):</span><span class="s-val">${w.vi || ''}</span></div>`;
+            html += `<div class="s-row r-vi"><span class="s-num">Hàng 1 (🇻🇳 Việt):</span><span class="s-val">${tokenizeRowText(w.vi, 'vi')}</span></div>`;
             
             // Hàng 2: Tiếng Anh
             if (w.en && w.en.trim() !== '') {
-                let valEn = (hideLang === 'en') ? `<span style="color:#95a5a6;">[ Hãy gõ Tiếng Anh bên dưới ]</span>` : w.en;
+                let valEn = (hideLang === 'en') ? `<span style="color:#95a5a6;">[ Hãy gõ Tiếng Anh bên dưới ]</span>` : tokenizeRowText(w.en, 'en');
                 html += `<div class="s-row r-en"><span class="s-num">Hàng 2 (🇬🇧 Anh):</span><span class="s-val">${valEn}</span></div>`;
             }
             
             // Hàng 3: Phát âm Tiếng Anh
             if (w.en_pronunciation && w.en_pronunciation.trim() !== '') {
-                html += `<div class="s-row r-en-p"><span class="s-num">Hàng 3 (🗣 P.Âm Anh):</span><span class="s-val">${w.en_pronunciation}</span></div>`;
+                html += `<div class="s-row r-en-p"><span class="s-num">Hàng 3 (🗣 P.Âm Anh):</span><span class="s-val">${tokenizeRowText(w.en_pronunciation, 'en_pron')}</span></div>`;
             }
             
             // Hàng 4: Tiếng Tagalog
             if (w.tl && w.tl.trim() !== '') {
-                let valTl = (hideLang === 'tl') ? `<span style="color:#95a5a6;">[ Hãy gõ Tagalog bên dưới ]</span>` : w.tl;
+                let valTl = (hideLang === 'tl') ? `<span style="color:#95a5a6;">[ Hãy gõ Tagalog bên dưới ]</span>` : tokenizeRowText(w.tl, 'tl');
                 html += `<div class="s-row r-tl"><span class="s-num">Hàng 4 (🇵🇭 Tagalog):</span><span class="s-val">${valTl}</span></div>`;
             }
             
             // Hàng 5: Phát âm Tiếng Tagalog (nếu có)
             if (tlPron && tlPron.trim() !== '') {
-                html += `<div class="s-row r-tl-p"><span class="s-num">Hàng 5 (🗣 P.Âm TL):</span><span class="s-val">${tlPron}</span></div>`;
+                html += `<div class="s-row r-tl-p"><span class="s-num">Hàng 5 (🗣 P.Âm TL):</span><span class="s-val">${tokenizeRowText(tlPron, 'tl_pron')}</span></div>`;
             }
             
             // Hàng 6: Tiếng Ilocano (nếu có)
             if (w.ilo && w.ilo.trim() !== '') {
-                let valIlo = (hideLang === 'ilo') ? `<span style="color:#95a5a6;">[ Hãy gõ Ilocano bên dưới ]</span>` : w.ilo;
+                let valIlo = (hideLang === 'ilo') ? `<span style="color:#95a5a6;">[ Hãy gõ Ilocano bên dưới ]</span>` : tokenizeRowText(w.ilo, 'ilo');
                 html += `<div class="s-row r-ilo"><span class="s-num">Hàng 6 (🌴 Ilocano):</span><span class="s-val">${valIlo}</span></div>`;
             }
 
@@ -490,7 +715,6 @@
             return html;
         }
 
-        // Hàm dựng thẻ thu gọn theo đúng thứ tự Hàng 2 -> Hàng 6 (dùng cho nút Trắc Nghiệm & Nối Từ)
         function buildCompactMultiRowHTML(w, includeVi = false) {
             if (!w) return '';
             if (currentAppMode === 'zh') {
@@ -502,7 +726,6 @@
                 return h;
             }
 
-            // Nếu đang chọn chế độ Chuyên 1 tiếng (chỉ hiện tiếng đó)
             if (nailStudyMode !== 'ALL') {
                 let lang = nailStudyMode;
                 let pronKey = lang + '_pronunciation';
@@ -516,7 +739,6 @@
                 return h;
             }
 
-            // Chế độ Tích Hợp Tất Cả Ngôn Ngữ: Hiện đúng thứ tự Hàng 1 -> Hàng 6
             let tlPron = w.tl_pronunciation || w.tl_pron || '';
             let h = `<div class="compact-multi-list">`;
             if (includeVi && w.vi) h += `<div class="cm-row cm-vi">1. 🇻🇳 ${w.vi}</div>`;
@@ -610,10 +832,15 @@
 
         function goBackToMenu() { openScreen('screen-vocab-menu'); }
 
+        function hideAllInspectors() {
+            document.querySelectorAll('.word-inspector').forEach(el => el.style.display = 'none');
+        }
+
         function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
             document.getElementById(screenId).classList.add('active-screen');
             document.querySelectorAll('.extra-info').forEach(el => el.style.display = 'none');
+            hideAllInspectors();
 
             if(screenId === 'screen-flashcard') loadFlashcard();
             if(screenId === 'screen-type') loadType();
@@ -626,7 +853,6 @@
             if(screenId === 'screen-book-scramble') loadScramble();
         }
 
-        // BỘ CHỌN CHẾ ĐỘ NGÔN NGỮ NAIL: TÍCH HỢP TẤT CẢ (6 HÀNG) HOẶC CHUYÊN TIẾNG
         function buildLanguageSelector() {
             if(vocabList.length === 0) return;
             let html = `<button class="lang-btn all-mode selected" id="btn-lang-ALL" onclick="setNailStudyMode('ALL')">🌐 Tích Hợp Tất Cả (Đủ 6 Hàng)</button>`;
@@ -655,7 +881,6 @@
                 return vocabList.filter(w => w.vi && w.vi.trim() !== '' && w.zh && w.zh.trim() !== '');
             }
             if (!langCode || langCode === 'ALL') {
-                // Lấy tất cả các từ có Tiếng Việt và có ít nhất Tiếng Anh hoặc Tagalog hoặc Ilocano
                 return vocabList.filter(w => w.vi && w.vi.trim() !== '' && ((w.en && w.en.trim() !== '') || (w.tl && w.tl.trim() !== '') || (w.ilo && w.ilo.trim() !== '')));
             }
             return vocabList.filter(w => w.vi && w.vi.trim() !== '' && w[langCode] && w[langCode].trim() !== '');
@@ -664,14 +889,12 @@
         function chooseTargetLangForWord(w) {
             if (currentAppMode === 'zh') return 'zh';
             if (nailStudyMode !== 'ALL') return nailStudyMode;
-            // Nếu ở chế độ ALL, chọn ngôn ngữ có dữ liệu của từ đó (ưu tiên en, tl, ilo)
             let avail = ['en', 'tl', 'ilo'].filter(l => w[l] && w[l].trim() !== '');
             return avail.length > 0 ? avail[Math.floor(Math.random() * avail.length)] : 'en';
         }
 
         function playCurrentAudio() {
             if(currentLangForTurn === 'ilo') { 
-                // Nếu đang ở chế độ ALL mà trúng ilo, tự động đọc tiếng Anh hoặc Tagalog
                 if (currentWord.en) { speakWordLang('en'); return; }
                 if (currentWord.tl) { speakWordLang('tl'); return; }
                 alert("Chưa hỗ trợ giọng Ilocano."); return; 
@@ -685,12 +908,13 @@
             if (pool.length === 0) { alert("❌ Chưa có dữ liệu từ vựng!"); goBackToMenu(); return; }
             currentWord = pickSmartWord(pool);
             updateStarUI('vocab');
+            hideAllInspectors();
 
             document.getElementById('flashcard-six-rows').innerHTML = buildSixRowCardHTML(currentWord);
             document.getElementById('flashcard-audio-bar').innerHTML = buildAudioButtonsHTML(currentWord);
         }
 
-        // --- GAME 1: LUYỆN GÕ (CÓ BẢNG 6 HÀNG) ---
+        // --- GAME 1: LUYỆN GÕ ---
         function toggleTypePeek() {
             showFullRowsInType = !showFullRowsInType;
             let btn = document.getElementById('btn-toggle-peek');
@@ -710,6 +934,7 @@
             currentWord = pickSmartWord(pool); 
             currentLangForTurn = chooseTargetLangForWord(currentWord);
             updateStarUI('vocab');
+            hideAllInspectors();
 
             renderTypeCard();
 
@@ -725,7 +950,6 @@
             let input = document.getElementById('type-input').value.trim().toLowerCase(); 
             if (!input) return;
 
-            // Cho phép khớp chính xác với ngôn ngữ đang hỏi HOẶC bất kỳ ngôn ngữ nào của từ đó khi ở chế độ ALL
             let validAnswers = [];
             if (currentAppMode === 'zh') {
                 if (currentWord.zh) validAnswers.push(currentWord.zh.trim().toLowerCase());
@@ -740,7 +964,7 @@
             if(validAnswers.includes(input)) {
                 document.getElementById('type-result').innerHTML = "✅ Chính xác tuyệt đối!"; 
                 document.getElementById('type-result').style.color = "green";
-                document.getElementById('type-six-rows').innerHTML = buildSixRowCardHTML(currentWord); // Hiện full 6 hàng
+                document.getElementById('type-six-rows').innerHTML = buildSixRowCardHTML(currentWord);
                 playCurrentAudio(); 
                 setTimeout(loadType, 2800);
             } else { 
@@ -750,7 +974,7 @@
             }
         }
 
-        // --- GAME 2: TRẮC NGHIỆM (TÍCH HỢP ĐỦ 6 HÀNG TRÊN ĐÁP ÁN) ---
+        // --- GAME 2: TRẮC NGHIỆM ---
         function loadQuiz() {
             let pool = getValidWordPool(currentAppMode === 'zh' ? 'zh' : nailStudyMode);
             if(pool.length < 4) { alert("❌ Cần nhập ít nhất 4 từ vựng để chơi Trắc Nghiệm!"); goBackToMenu(); return; }
@@ -758,11 +982,11 @@
             currentWord = pickSmartWord(pool); 
             currentLangForTurn = chooseTargetLangForWord(currentWord);
             updateStarUI('vocab');
+            hideAllInspectors();
 
-            // Câu hỏi: Hàng 1 (Tiếng Việt)
             document.getElementById('quiz-question-box').innerHTML = `
                 <div class="six-row-box" style="margin-bottom:8px;">
-                    <div class="s-row r-vi" style="margin:0; border:none;"><span class="s-num">Hàng 1 (🇻🇳 Việt):</span><span class="s-val">${currentWord.vi}</span></div>
+                    <div class="s-row r-vi" style="margin:0; border:none;"><span class="s-num">Hàng 1 (🇻🇳 Việt):</span><span class="s-val">${tokenizeRowText(currentWord.vi, 'vi')}</span></div>
                 </div>`;
             
             document.getElementById('quiz-hint').innerText = (currentAppMode === 'zh') 
@@ -792,12 +1016,12 @@
         function checkQuiz(btn, selectedVi) {
             if(selectedVi === currentWord.vi) {
                 btn.classList.add('correct'); 
-                document.getElementById('quiz-result').innerHTML = "✅ Chính xác! Toàn bộ 6 hàng của từ này:"; 
+                document.getElementById('quiz-result').innerHTML = "✅ Chính xác! Bạn có thể chạm vào từ bất kỳ bên dưới để dò nghĩa:"; 
                 document.getElementById('quiz-result').style.color = "green";
                 playCurrentAudio(); 
                 document.getElementById('quiz-extra').innerHTML = buildSixRowCardHTML(currentWord); 
                 document.getElementById('quiz-extra').style.display = 'block';
-                setTimeout(loadQuiz, 3200);
+                setTimeout(loadQuiz, 3800);
             } else { 
                 btn.classList.add('wrong'); 
                 document.getElementById('quiz-result').innerHTML = "❌ Chưa đúng! Hãy đối chiếu kỹ lại nghĩa nhé!"; 
@@ -805,7 +1029,7 @@
             }
         }
 
-        // --- GAME 3: NGHE MÙ (HIỂN THỊ ĐỦ 6 HÀNG KHI KIỂM TRA) ---
+        // --- GAME 3: NGHE MÙ ---
         function loadListen() {
             let pool = getValidWordPool(currentAppMode === 'zh' ? 'zh' : (nailStudyMode === 'ilo' ? 'en' : nailStudyMode));
             if(pool.length === 0) { alert("❌ Không có dữ liệu để chơi!"); goBackToMenu(); return; }
@@ -814,6 +1038,7 @@
             currentLangForTurn = chooseTargetLangForWord(currentWord);
             if (currentLangForTurn === 'ilo') currentLangForTurn = currentWord.en ? 'en' : 'tl';
             updateStarUI('vocab');
+            hideAllInspectors();
 
             document.getElementById('listen-audio-bar').innerHTML = buildAudioButtonsHTML(currentWord);
             document.getElementById('listen-hint').innerText = `👉 Nghe và gõ lại từ (Hoặc bấm Kiểm tra để xem đủ 6 hàng)`;
@@ -836,15 +1061,15 @@
             if(input !== "" && validAnswers.includes(input)) {
                 document.getElementById('listen-result').innerHTML = `✅ Chính xác!`; 
                 document.getElementById('listen-result').style.color = "green";
-                setTimeout(loadListen, 3500);
+                setTimeout(loadListen, 3800);
             } else { 
-                document.getElementById('listen-result').innerHTML = `👀 Bảng đầy đủ 6 hàng của từ vừa phát:`; 
+                document.getElementById('listen-result').innerHTML = `👀 Bảng đầy đủ 6 hàng của từ vừa phát (Chạm vào từ để dò nghĩa):`; 
                 document.getElementById('listen-result').style.color = "#2980b9"; 
                 playCurrentAudio(); 
             }
         }
 
-        // --- GAME 4: AI LUYỆN NÓI (HIỂN THỊ TRỌN VẸN 6 HÀNG) ---
+        // --- GAME 4: AI LUYỆN NÓI ---
         function loadSpeak() {
             let pool = getValidWordPool(currentAppMode === 'zh' ? 'zh' : nailStudyMode);
             if(pool.length === 0) { alert("❌ Không có dữ liệu để chơi!"); goBackToMenu(); return; }
@@ -853,6 +1078,7 @@
             currentLangForTurn = chooseTargetLangForWord(currentWord);
             if (currentLangForTurn === 'ilo') currentLangForTurn = currentWord.en ? 'en' : 'tl';
             updateStarUI('vocab');
+            hideAllInspectors();
 
             document.getElementById('speak-six-rows').innerHTML = buildSixRowCardHTML(currentWord);
             document.getElementById('speak-audio-bar').innerHTML = buildAudioButtonsHTML(currentWord);
@@ -881,7 +1107,7 @@
             } else { alert("Trình duyệt không hỗ trợ thu âm."); }
         }
 
-        // --- GAME 5: NỐI TỪ (TÍCH HỢP ĐỦ 6 HÀNG TRÊN THẺ & GẮN SAO) ---
+        // --- GAME 5: NỐI TỪ ---
         let firstSel = null, matches = 0;
         function loadMatch() {
             let board = document.getElementById('match-board'); board.innerHTML = ''; firstSel = null; matches = 0;
@@ -900,11 +1126,9 @@
             
             let btns = [];
             shuffled.forEach(w => {
-                // Thẻ 1: Hàng 1 (Tiếng Việt)
                 let viHTML = `<div class="compact-multi-list"><div class="cm-row cm-vi">1. 🇻🇳 ${w.vi}</div></div>`;
                 btns.push({ html: viHTML, fullHtml: buildCompactMultiRowHTML(w, true), id: w.vi, side: 'vi', viKey: w.vi });
                 
-                // Thẻ 2: Tích hợp đầy đủ Hàng 2 -> Hàng 6 (Anh + P.Âm Anh + Tagalog + P.Âm TL + Ilocano) của đúng từ đó
                 let foreignHTML = buildCompactMultiRowHTML(w, false);
                 btns.push({ html: foreignHTML, fullHtml: buildCompactMultiRowHTML(w, true), id: w.vi, side: 'foreign', viKey: w.vi });
             });
@@ -945,11 +1169,8 @@
                 if(firstSel.item.id === item.id && firstSel.item.side !== item.side) {
                     firstSel.btn.classList.replace('selected', 'matched'); 
                     btn.classList.replace('selected', 'matched');
-                    
-                    // Khi nối đúng, hiển thị trọn vẹn cả 6 hàng (từ Hàng 1 -> Hàng 6) trên thẻ để ghi nhớ đồng bộ!
                     firstSel.btn.querySelector('.match-text').innerHTML = item.fullHtml;
                     btn.querySelector('.match-text').innerHTML = item.fullHtml;
-
                     matches++; 
                     if(matches === 4) {
                         document.getElementById('match-status').innerText = "🎉 Hoàn thành xuất sắc! Cả 4 cặp từ đã hiện đủ 6 hàng đồng bộ!";
